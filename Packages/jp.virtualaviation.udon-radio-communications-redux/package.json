@@ -1,0 +1,20 @@
+{
+  "name": "jp.virtualaviation.udon-radio-communications-redux",
+  "displayName": "Udon Radio Communications Redux",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Simplified radio communication system for VRChat Udon worlds.",
+  "homepage": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux#readme",
+  "bugs": {
+    "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "esnya"
+  },
+  "unity": "2022.3"
+}
