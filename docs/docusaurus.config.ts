@@ -6,8 +6,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'UdonRadioCommunications-Redux',
-  tagline: 'Dinosaurs are cool',
-  // favicon: 'img/favicon.ico',
+  tagline: 'VRChat Udon worldsのための無線コミュニケーションシステム ',
+  favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
   url: 'https://virtualaviationjapan.github.io',
@@ -55,10 +55,10 @@ const config: Config = {
     // image: 'img/docusaurus-social-card.jpg',
     navbar: {
       title: 'UdonRadioCommunications-Redux',
-      // logo: {
-      //   alt: 'UdonRadioCommunications-Redux Logo',
-      //   src: 'img/logo.svg',
-      // },
+      logo: {
+        alt: 'UdonRadioCommunications-Redux Logo',
+        src: 'img/VAJ_Logo_B.svg',
+      },
       items: [
         {
           type: 'docSidebar',

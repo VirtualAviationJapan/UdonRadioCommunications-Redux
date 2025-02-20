@@ -2,46 +2,39 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Introduction
 
-Let's discover **Docusaurus in less than 5 minutes**.
+## 概要
 
-## Getting Started
+UdonRadioCommunications-Redux は、VRChat における UdonSharp (U#) で動作する、高度な音声コミュニケーションシステムです。
 
-Get started by **creating a new site**.
+## 背景
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+従来型の UdonRadioCommunication には、以下のような課題がありました。
 
-### What you'll need
+- 更新の停滞とバグの存在
+- 複雑なシステムと依存関係による運用性の低さ
+- 拡張性の不足
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+UdonRadioCommunications-Redux は、これらの課題を解決し、より柔軟で拡張性の高い無線システムを提供するために開発されました。
 
-## Generate a new site
+## 特徴
 
-Generate a new Docusaurus site using the **classic template**.
+UdonRadioCommunications-Redux は、以下の主要な機能を備えています。
 
-The classic template will automatically be added to your project after you run the command:
+### 柔軟な送受信システム
+- 送受信モジュールの抽象化により、様々な無線システムに対応可能。
+- 複数の送受信モジュールを同時に管理し、複雑な通信環境を構築可能。
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+### 高度な拡声機能
+- 特定の人物に対する拡声/標準/サイレントの切り替え機能。
+- ゾーン情報を利用した拡声状態の自動制御。
+- ゾーンを跨いでの拡声状態の変更や、機内音声による拡声状態のオーバーライド機能。
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+### 音声 On/Off 機能
+- 特定音声の On/Off を任意に設定可能。
+- 設定に基づいた GameObject の On/Off 制御 (旧 ATIS/VOR 機能の代替)。
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+## 今後の展望
 
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+UdonRadioCommunications-Redux は、VRChat における様々なコミュニケーションニーズに対応できる、強力なツールとなることを目指しています。
