@@ -29,16 +29,6 @@ namespace UdonRadioCommunicationRedux
             DataToken pidToken = playerId;
             playerVoices.Remove(pidToken);
         }
-        public void ValidatePlayerVoices()
-        {
-            DataList registeredPlayerIdList = playerVoices.GetKeys();
-            for (int i = 0; i < registeredPlayerIdList.Count; i++)
-            {
-                DataToken pidToken = registeredPlayerIdList[i];
-                DataToken pvToken = playerVoices[pidToken];
-                if (!Utilities.IsValid(pvToken.Reference)) playerVoices.Remove(pidToken);
-            }
-        }
         #endregion
 
         #region Voice Setting

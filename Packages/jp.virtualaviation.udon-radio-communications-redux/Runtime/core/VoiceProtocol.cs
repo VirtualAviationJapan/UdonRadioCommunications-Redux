@@ -13,14 +13,6 @@ namespace UdonRadioCommunicationRedux
         public UdonRadioCommunication urc;
         [HideInInspector] public int protocolPriority = -1;
 
-        // protected abstract float validateVoiceGain(bool status);
-        public virtual void OnPlayerVoiceAdded(int playerId)
-        {
-        }
-
-        protected virtual void validate() { }
-
-        // public abstract void reset();
-
+        public abstract void OnPlayerVoiceAdded(int playerId);
     }
 }
