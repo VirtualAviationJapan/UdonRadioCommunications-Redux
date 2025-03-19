@@ -10,19 +10,17 @@ namespace UdonRadioCommunicationRedux
     public abstract class VoiceProtocol : UdonSharpBehaviour
     {
 
-        public UdonRadioCommunication manager;
-        [HideInInspector] public int voicePriority = -1;
-
-        protected virtual void startShiftVoice(VRCPlayerApi player, float gain) { }
-        protected virtual void stopShiftVoice(VRCPlayerApi player) { }
+        public UdonRadioCommunication urc;
+        [HideInInspector] public int protocolPriority = -1;
 
         // protected abstract float validateVoiceGain(bool status);
-        public virtual void OnPlayerJoined(VRCPlayerApi player)
+        public virtual void OnPlayerVoiceAdded(int playerId)
         {
-            validate();
         }
 
         protected virtual void validate() { }
+
+        // public abstract void reset();
 
     }
 }
