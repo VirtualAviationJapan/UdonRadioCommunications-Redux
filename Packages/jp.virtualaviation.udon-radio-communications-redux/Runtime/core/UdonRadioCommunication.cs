@@ -50,7 +50,7 @@ namespace UdonRadioCommunicationRedux
         public void SetVoiceVolumetricRadius(int playerId, int priority, float radius)
         {
             PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.SetVoiceFar(priority, radius);
+            pv.SetVoiceVolumetricRadius(priority, radius);
         }
         public void SetVoiceLowpass(int playerId, int priority, bool enabled)
         {
