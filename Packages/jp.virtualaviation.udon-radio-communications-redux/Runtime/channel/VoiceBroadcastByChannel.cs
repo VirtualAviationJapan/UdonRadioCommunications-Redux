@@ -49,7 +49,7 @@ namespace UdonRadioCommunicationRedux
             RxChannelState[channel] = channelRxStatus;
 
             // 2. あるチャンネルに備わるゲインから、最大のゲインを選択する
-            float nextChannelGain = GetChannelRxGain(channel);
+            float nextChannelGain = GetChannelRxGain(channelRxStatus);
             // 4. プレイヤーの拡声音量を更新する
             // 変更したチャンネルにおいて、送信中のプレイヤーのリストを取得する
             DataList transmittingPlayers = GetTransmittingPlayerList(channel);
@@ -73,7 +73,7 @@ namespace UdonRadioCommunicationRedux
             RxChannelState[channel] = channelRxStatus;
 
             // 2. あるチャンネルに備わるゲインから、最大のゲインを選択する
-            float nextChannelGain = GetChannelRxGain(channel);
+            float nextChannelGain = GetChannelRxGain(channelRxStatus);
             // 4. プレイヤーの拡声音量を更新する
             // 変更したチャンネルにおいて、送信中のプレイヤーのリストを取得する
             DataList transmittingPlayers = GetTransmittingPlayerList(channel);
@@ -97,7 +97,7 @@ namespace UdonRadioCommunicationRedux
 
             float channelGain = GetChannelRxGain(channel);
 
-            
+
             if (TxChannelState.TryGetValue(0, TokenType.Float, out DataToken channelGainToken))
             {
                 TrySetPlayerVoiceGain(playerId, channel, channelGainToken.Float);
@@ -148,6 +148,7 @@ namespace UdonRadioCommunicationRedux
 
         /// <summary>
         /// そのチャンネルにおける、現在の受信音量を取得する
+        /// そのチャンネルを聴取中の受信機がない場合、0を返す
         /// </summary>
         /// <param name="channelRxStatus">現在のチャンネルに紐づいた受信機の状態</param>
         /// <returns>受信音量の最大値</returns>
@@ -159,13 +160,18 @@ namespace UdonRadioCommunicationRedux
             return nextChannelGain;
         }
 
+        /// <summary>
+        /// 現在、指定したチャンネルから送信中のプレイヤーの一覧を取得する
+        /// </summary>
+        /// <param name="channel">検索対象のチャンネル</param>
+        /// <returns>送信中プレイヤー一覧</returns>
         private DataList GetTransmittingPlayerList(int channel)
         {
             if (TxChannelState.TryGetValue(channel, TokenType.DataDictionary, out DataToken value))
             {
                 return value.DataDictionary.GetKeys();
             }
-            return null;
+            return new DataList();
         }
 
         private static DataDictionary GetChildrenFromDictionary(DataDictionary dict, int id)
