@@ -8,14 +8,30 @@ using Utilities = VRC.SDKBase.Utilities;
 
 namespace UdonRadioCommunicationRedux
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class VoiceBroadcastByChannel : VoiceProtocol
     {
 
         // public UdonRadioCommunication urc;
         // [HideInInspector] public int protocolPriority = -1;
-        private DataDictionary RxChannelState = new DataDictionary();
-        private DataDictionary TxChannelState = new DataDictionary();
-        private DataDictionary TxPlayerState = new DataDictionary();
+
+        /// <summary>
+        /// あるチャンネルにおける、ある受信機の設定音量
+        /// </summary>
+        private DataDictionary RxChannelGainState = new DataDictionary();
+        /// <summary>
+        /// あるチャンネルにおける、ある受信機の実体
+        /// </summary>
+        private DataDictionary RxChannelReceivers = new DataDictionary();
+
+        /// <summary>
+        /// あるチャンネルにおける、あるプレイヤーが保持する送信機
+        /// </summary>
+        private DataDictionary TxChannelPlayerState = new DataDictionary();
+        /// <summary>
+        /// あるプレイヤーの、あるチャンネルにおける、受信側の音量
+        /// </summary>
+        private DataDictionary TxPlayerChannelGain = new DataDictionary();
 
         // 制約条件として、near, far, volumetricradiusは実行中固定値扱いとする
         [SerializeField] private float near = 99998;
@@ -31,95 +47,158 @@ namespace UdonRadioCommunicationRedux
 
         #region public api
         /// <summary>
-        /// ローカルプレイヤーが、あるチャンネルを追加で聴取する
+        /// 受信機の受信状態・音量を追加/更新する
         /// </summary>
-        /// <param name="channel">聴取対象に追加したいチャンネルに紐づくID</param>
-        public void Subscribe(int channel, int instanceId, float gain)
+        /// <param name="receriver">受信機</param>
+        /// <param name="channel">聴取対象に追加したいチャンネルID</param>
+        /// <param name="gain">受信機の音量</param>
+        public void Subscribe(UdonSharpBehaviour receriver, int channel, float gain)
         {
-            // 1. あるチャンネルに、受信機の情報(受信機に固有のID,受信機の音量)を追加する
-            // 2. ローカルプレイヤーについて、あるチャンネルの聴取音量を更新する
-            // 3. 1.2.の結果を 受信チャンネルのデータベースに保存する
-            // 4. 2.の結果から、プレイヤーの拡声音量を更新する
+            // 受信機のインスタンスIDを取得する
+            int instanceId = receriver.GetInstanceID();
 
-            // 選択されたチャンネルにおける受信機の情報(作業用)
-            DataDictionary channelRxStatus = GetChildrenFromDictionary(RxChannelState, channel);
-            // 1.「ある受信機は、gainの音量をもつ」を作業用領域に追加
+            //　「ある受信機は、gainの音量をもつ」を作業用領域に追加
+            DataDictionary channelRxStatus = GetChildrenFromDictionary(RxChannelGainState, channel);
             channelRxStatus[instanceId] = gain;
-            // 3. 作業用領域->保存領域にコピー
-            RxChannelState[channel] = channelRxStatus;
+            RxChannelGainState[channel] = channelRxStatus;
 
-            // 2. あるチャンネルに備わるゲインから、最大のゲインを選択する
+            // 受信機の実体を保存する
+            DataDictionary channelRxReceivers = GetChildrenFromDictionary(RxChannelReceivers, channel);
+            channelRxReceivers[instanceId] = receriver;
+            RxChannelReceivers[channel] = channelRxReceivers;
+
+            // 今回設定を変更したチャンネルにおける、最大のゲインを選択する
             float nextChannelGain = GetChannelRxGain(channelRxStatus);
-            // 4. プレイヤーの拡声音量を更新する
-            // 変更したチャンネルにおいて、送信中のプレイヤーのリストを取得する
-            DataList transmittingPlayers = GetTransmittingPlayerList(channel);
+            // プレイヤーの拡声音量を更新する
+            // 変更したチャンネルにて送信中のプレイヤーのリストを取得する
+            DataList transmittingPlayers = GetTransmitingPlayers(TxChannelPlayerState, channel);
             // 今回設定を変更したチャンネルにて送信中の各プレイヤーの音声設定を更新する
-            foreach (int playerId in transmittingPlayers)
+            foreach (int playerId in transmittingPlayers.ToArray())
             {
-                TrySetPlayerVoiceGain(playerId, channel, nextChannelGain);
+                if (TxPlayerChannelGain.TryGetValue(playerId, TokenType.DataDictionary, out DataToken value))
+                {
+                    DataDictionary playerTxGain = value.DataDictionary;
+                    playerTxGain[channel] = nextChannelGain;
+                    TxPlayerChannelGain[playerId] = playerTxGain;
+                    UpdatePlayerVoiceGain(playerId, playerTxGain);
+                }
+            }
+            // 受信機に、送信中の送信機の有無を通知する
+            if (transmittingPlayers.Count > 0)
+            {
+                receriver.SendCustomEvent("ChannelTransmitting");
+            }
+            else
+            {
+                receriver.SendCustomEvent("ChannelNotTransmitting");
             }
         }
 
         /// <summary>
-        /// ローカルプレイヤーが、あるチャンネルの聴取を取りやめる
+        /// 受信機の受信状態を停止する
         /// </summary>
-        /// <param name="channel">聴取対象に追加したいチャンネルに紐づくID</param>
-        public void UnSubscribe(int channel, int instanceId)
+        /// <param name="receriver">受信機</param>
+        /// <param name="channel">変更するチャンネルID</param>
+        /// 
+        public void UnSubscribe(UdonSharpBehaviour receriver, int channel)
         {
-            DataDictionary channelRxStatus = GetChildrenFromDictionary(RxChannelState, channel);
-            // 1.「ある受信機は、gainの音量をもつ」を作業用領域に追加
+            // 受信機のインスタンスIDを取得する
+            int instanceId = receriver.GetInstanceID();
+            // 選択されたチャンネルにおける受信機の情報(作業用)
+            DataDictionary channelRxStatus = GetChildrenFromDictionary(RxChannelGainState, channel);
+            // 受信機を削除
             channelRxStatus.Remove(instanceId);
-            // 3. 作業用領域->保存領域にコピー
-            RxChannelState[channel] = channelRxStatus;
+            // 作業用領域->保存領域にコピー
+            RxChannelGainState[channel] = channelRxStatus;
 
-            // 2. あるチャンネルに備わるゲインから、最大のゲインを選択する
+            // 受信機の実体を削除する
+            DataDictionary channelRxReceivers = GetChildrenFromDictionary(RxChannelReceivers, channel);
+            channelRxReceivers.Remove(instanceId);
+            RxChannelReceivers[channel] = channelRxReceivers;
+
+            // あるチャンネルに備わるゲインから、最大のゲインを選択する
             float nextChannelGain = GetChannelRxGain(channelRxStatus);
-            // 4. プレイヤーの拡声音量を更新する
-            // 変更したチャンネルにおいて、送信中のプレイヤーのリストを取得する
-            DataList transmittingPlayers = GetTransmittingPlayerList(channel);
+            // プレイヤーの拡声音量を更新する
+            // 変更したチャンネルにて送信中のプレイヤーのリストを取得する
+            DataList transmittingPlayers = GetTransmitingPlayers(TxChannelPlayerState, channel);
             // 今回設定を変更したチャンネルにて送信中の各プレイヤーの音声設定を更新する
-            foreach (int playerId in transmittingPlayers)
+            foreach (int playerId in transmittingPlayers.ToArray())
             {
-                TrySetPlayerVoiceGain(playerId, channel, nextChannelGain);
+                if (TxPlayerChannelGain.TryGetValue(playerId, TokenType.DataDictionary, out DataToken value))
+                {
+                    DataDictionary playerTxGain = value.DataDictionary;
+                    playerTxGain[channel] = nextChannelGain;
+                    TxPlayerChannelGain[playerId] = playerTxGain;
+                    UpdatePlayerVoiceGain(playerId, playerTxGain);
+                }
             }
-
         }
 
-        public void Publish(int channel, int instanceId, int playerId)
+        /// <summary>
+        /// あるチャンネルにおける送信状態を追加する
+        /// </summary>
+        /// <param name="transmitter">送信機</param>
+        /// <param name="playerId">送信対象のプレイヤーID</param>
+        /// <param name="channel">送信対象のチャンネルID</param>
+        public void Publish(UdonSharpBehaviour transmitter, int playerId, int channel)
         {
+            // 送信対象が自分の場合、処理を行わない
+            // if (playerId == Networking.LocalPlayer.playerId) return;
+            // 受信機のインスタンスIDを取得する
+            int instanceId = transmitter.GetInstanceID();
             // 選択されたチャンネルにおける送信者の情報(作業用)
-            DataDictionary channelTxStatus = GetChildrenFromDictionary(TxChannelState, channel);
+            DataDictionary channelTxStatus = GetChildrenFromDictionary(TxChannelPlayerState, channel);
             DataDictionary channelplayerTxStatus = GetChildrenFromDictionary(channelTxStatus, playerId);
             // 送信対象者の送信状態を追加する
             channelplayerTxStatus[instanceId] = true;
             // 送信対象者の送信状態を、作業用領域->保存領域にコピーする
-            TxChannelState[channel] = channelTxStatus;
+            channelTxStatus[playerId] = channelplayerTxStatus;
+            TxChannelPlayerState[channel] = channelTxStatus;
 
-            float channelGain = GetChannelRxGain(channel);
+            float nextChannelGain = GetChannelRxGain(GetChildrenFromDictionary(RxChannelGainState, channel));
 
+            DataDictionary playerTxGain = GetChildrenFromDictionary(TxPlayerChannelGain, playerId);
 
-            if (TxChannelState.TryGetValue(0, TokenType.Float, out DataToken channelGainToken))
-            {
-                TrySetPlayerVoiceGain(playerId, channel, channelGainToken.Float);
-            }
+            playerTxGain[channel] = nextChannelGain;
+            TxPlayerChannelGain[playerId] = playerTxGain;
+            UpdatePlayerVoiceGain(playerId, playerTxGain);
+            // 受信機に、送信中の送信機の有無を通知する
+            CallbackRxTransmittingState(channel);
         }
 
-        public void Unpublish(int channel, int instanceId, int playerId)
+        /// <summary>
+        /// あるチャンネルにおける送信状態を停止する
+        /// </summary>
+        /// <param name="transmitter">送信機</param>
+        /// <param name="playerId">送信対象のプレイヤーID</param>
+        /// <param name="channel">送信対象のチャンネルID</param>
+        public void Unpublish(UdonSharpBehaviour transmitter, int playerId, int channel)
         {
+            // 送信対象が自分の場合、処理を行わない
+            // if (playerId == Networking.LocalPlayer.playerId) return;
+            // 受信機のインスタンスIDを取得する
+            int instanceId = transmitter.GetInstanceID();
             // 選択されたチャンネルにおける送信者の情報を取得を、作業用領域にコピーする
             // もし存在しない場合、作業用領域は空のDataDictionaryを使用する
-            DataDictionary channelTxStatus = GetChildrenFromDictionary(TxChannelState, channel);
+            DataDictionary channelTxStatus = GetChildrenFromDictionary(TxChannelPlayerState, channel);
             DataDictionary channelPlayerTxStatus = GetChildrenFromDictionary(channelTxStatus, playerId);
             channelPlayerTxStatus.Remove(instanceId);
             setOrDeleteChildren(channelTxStatus, channelPlayerTxStatus, playerId);
-            setOrDeleteChildren(TxChannelState, channelTxStatus, channel);
+            setOrDeleteChildren(TxChannelPlayerState, channelTxStatus, channel);
 
-            DataDictionary playerTxStatus = GetChildrenFromDictionary(TxPlayerState, playerId);
-            DataDictionary playerChannelTxStatus = GetChildrenFromDictionary(playerTxStatus, channel);
-            playerChannelTxStatus.Remove(instanceId);
-            setOrDeleteChildren(playerTxStatus, playerChannelTxStatus, channel);
-            setOrDeleteChildren(TxPlayerState, playerTxStatus, playerId);
+            // 当該プレイヤーの、状態更新後の音量を更新する
+            if (TxPlayerChannelGain.TryGetValue(playerId, TokenType.DataDictionary, out DataToken value))
+            {
+                DataDictionary playerTxGain = value.DataDictionary;
+                playerTxGain.Remove(channel);
+                TxPlayerChannelGain[playerId] = playerTxGain;
+
+                UpdatePlayerVoiceGain(playerId, playerTxGain);
+            }
+            // 受信機に、送信中の送信機の有無を通知する
+            CallbackRxTransmittingState(channel);
         }
+
         #endregion
 
         #region voice manipulation
@@ -129,12 +208,12 @@ namespace UdonRadioCommunicationRedux
             urc.SetVoiceFar(playerId, protocolPriority, far);
             urc.SetVoiceVolumetricRadius(playerId, protocolPriority, volumetricRadius);
             urc.SetVoiceLowpass(playerId, protocolPriority, lowpass);
-            urc.DisableVoiceProtocol(playerId, protocolPriority);
+            // urc.DisableVoiceProtocol(playerId, protocolPriority);
         }
 
         private void IniializeAllPlayerVoice()
         {
-            VRCPlayerApi[] players = new VRCPlayerApi[100];
+            VRCPlayerApi[] players = new VRCPlayerApi[VRCPlayerApi.GetPlayerCount()];
             VRCPlayerApi.GetPlayers(players);
 
             foreach (VRCPlayerApi player in players)
@@ -143,7 +222,6 @@ namespace UdonRadioCommunicationRedux
                 InitializePlayerVoice(player.playerId);
             }
         }
-
         #endregion
 
         /// <summary>
@@ -157,35 +235,68 @@ namespace UdonRadioCommunicationRedux
             DataList channnelGainList = channelRxStatus.GetValues();
             if (channnelGainList.Count == 0) return 0;
             channnelGainList.Sort();
-            return nextChannelGain;
+            return channnelGainList[channnelGainList.Count - 1].Float;
         }
 
-        /// <summary>
-        /// 現在、指定したチャンネルから送信中のプレイヤーの一覧を取得する
-        /// </summary>
-        /// <param name="channel">検索対象のチャンネル</param>
-        /// <returns>送信中プレイヤー一覧</returns>
-        private DataList GetTransmittingPlayerList(int channel)
+        private void CallbackRxTransmittingState(int channel)
         {
-            if (TxChannelState.TryGetValue(channel, TokenType.DataDictionary, out DataToken value))
+            DataDictionary channelRxReceivers = GetChildrenFromDictionary(RxChannelReceivers, channel);
+            DataList transmittingPlayers = GetTransmitingPlayers(TxChannelPlayerState, channel);
+            if (transmittingPlayers.Count > 0)
             {
-                return value.DataDictionary.GetKeys();
+                foreach (DataToken instance in channelRxReceivers.GetValues().ToArray())
+                {
+                    UdonSharpBehaviour usb = (UdonSharpBehaviour)instance.Reference;
+                    usb.SendCustomEvent("ChannelTransmitting");
+                }
+            }
+            else
+            {
+                foreach (DataToken instance in channelRxReceivers.GetValues().ToArray())
+                {
+                    UdonSharpBehaviour usb = (UdonSharpBehaviour)instance.Reference;
+                    usb.SendCustomEvent("ChannelNotTransmitting");
+                }
+            }
+        }
+
+        private DataList GetTransmitingPlayers(DataDictionary TxChannelPlayerState, int channel)
+        {
+            if (TxChannelPlayerState.TryGetValue(channel, TokenType.DataDictionary, out DataToken channelTxState))
+            {
+                return channelTxState.DataDictionary.GetKeys();
             }
             return new DataList();
         }
 
-        private static DataDictionary GetChildrenFromDictionary(DataDictionary dict, int id)
+        private void UpdatePlayerVoiceGain(int playerId, DataDictionary playerTxState)
         {
-            DataDictionary newDictionary;
-            if (dict.TryGetValue(id, TokenType.DataDictionary, out DataToken value))
+            DataList playerTxGainList = playerTxState.GetValues();
+            playerTxGainList.Sort();
+            float nextGain = 0;
+
+            if (playerTxGainList.Count > 0)
             {
-                newDictionary = value.DataDictionary;
+                nextGain = playerTxGainList[playerTxGainList.Count - 1].Float;
+            }
+            urc.SetVoiceGain(playerId, protocolPriority, nextGain);
+            if (nextGain > 0)
+            {
+                urc.EnableVoiceProtocol(playerId, protocolPriority);
             }
             else
             {
-                newDictionary = new DataDictionary();
+                urc.DisableVoiceProtocol(playerId, protocolPriority);
             }
-            return newDictionary;
+        }
+
+        private static DataDictionary GetChildrenFromDictionary(DataDictionary dict, int id)
+        {
+            if (dict.TryGetValue(id, TokenType.DataDictionary, out DataToken value))
+            {
+                return value.DataDictionary;
+            }
+            return new DataDictionary();
         }
 
         private static void setOrDeleteChildren(DataDictionary dict, DataDictionary child, int id)
@@ -200,31 +311,31 @@ namespace UdonRadioCommunicationRedux
             }
         }
 
-        /// <summary>
-        /// あるプレイヤー、あるチャンネルにおける拡声音量を更新する
-        /// </summary>
-        /// <param name="playerId"></param>
-        /// <param name="channel"></param>
-        /// <param name="gain"></param>
-        /// <returns></returns>
-        private void TrySetPlayerVoiceGain(int playerId, int channel, float gain)
+        #region event
+        public override void OnPlayerJoined(VRCPlayerApi player)
         {
-            DataDictionary playerTxState;
-            if (TxPlayerState.TryGetValue(playerId, TokenType.DataDictionary, out DataToken value))
+            if (player.isLocal)
             {
-                playerTxState = value.DataDictionary;
+                IniializeAllPlayerVoice();
             }
-            else { return; }
-
-            playerTxState[channel] = gain;
-            playerTxGainList = playerTxState.GetValues();
-            playerTxGainList.Sort();
-            float nextGain = playerTxGainList[playerTxGainList.Count - 1].Float;
-
-            urc.SetVoiceGain(playerId, protocolPriority, gain);
-            if (nextGain > 0) urc.EnableVoiceProtocol(playerId, protocolPriority);
-            else urc.DisableVoiceProtocol(playerId, protocolPriority);
-
         }
+        public override void OnPlayerLeft(VRCPlayerApi player)
+        {
+            int playerId = player.playerId;
+            if (TxPlayerChannelGain.TryGetValue(playerId, TokenType.DataDictionary, out DataToken value))
+            {
+                DataList deleteChannel = value.DataDictionary.GetKeys();
+                TxPlayerChannelGain.Remove(playerId);
+                foreach (int channel in deleteChannel.ToArray())
+                {
+                    DataDictionary channelTxStatus = GetChildrenFromDictionary(TxChannelPlayerState, channel);
+                    channelTxStatus.Remove(playerId);
+                    TxChannelPlayerState[channel] = channelTxStatus;
+                    // 受信機に、送信中の送信機の有無を通知する
+                    CallbackRxTransmittingState(channel);
+                }
+            }
+        }
+        #endregion
     }
 }
