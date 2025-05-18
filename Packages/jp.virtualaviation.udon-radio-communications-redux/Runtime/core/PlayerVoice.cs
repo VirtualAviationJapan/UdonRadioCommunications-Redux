@@ -69,11 +69,13 @@ namespace UdonRadioCommunicationRedux
         public void DisableVoiceProtocol(int protocolPriority)
         {
             enableProtocol[protocolPriority] = false;
-            if (currentSelectedProtocol <= protocolPriority)
+            if (currentSelectedProtocol > protocolPriority) return;
+            for (int i = currentSelectedProtocol - 1; i >= 0; i--)
             {
-                for (int i = protocolPriority - 1; i >= 0; i--)
+                if (enableProtocol[i] == true)
                 {
-                    if (enableProtocol[i] == true) EnableVoiceProtocol(i);
+                    currentSelectedProtocol = i;
+                    EnableVoiceProtocol(i);
                 }
             }
         }
@@ -98,6 +100,19 @@ namespace UdonRadioCommunicationRedux
         void OnDestroy()
         {
             urc.UnregisterPlayerVoice(ownerPlayerId);
+        }
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            // 誰かが入場したとき、音声設定を再度解決する
+            for (int i = enableProtocol.Length - 1; i >= 0; i--)
+            {
+                if (enableProtocol[i] == true)
+                {
+                    EnableVoiceProtocol(i);
+                    return;
+                }
+            }
         }
         #endregion
     }
