@@ -17,20 +17,18 @@ namespace UdonRadioCommunicationRedux
         [UdonSynced, FieldChangeCallback(nameof(TxPower))] public bool txPower;
         [FieldChangeCallback(nameof(RxPower))] public bool rxPower;
 
-        public int Channel
+        public virtual int Channel
         {
             get => channel;
             set
             {
+                Debug.Log("Transceiver: channel changed");
+                if (rxPower == true) StopReceive();
+                if (txPower == true) StopTransmit();
                 channel = value;
-                if (rxPower == true)
-                {
-                    StartReceive();
-                }
-                if (rxPower == true && txPower == true)
-                {
-                    StartTransmit();
-                }
+                if (rxPower == true) StartReceive();
+                if (rxPower == true && txPower == true) StartTransmit();
+                OnUpdateChannel();
             }
         }
         public bool RxPower
@@ -65,11 +63,33 @@ namespace UdonRadioCommunicationRedux
                 {
                     StopTransmit();
                 }
-                RequestSerialization();
             }
         }
 
         public float gain = 17;
+
+        #region Interaction
+        public virtual void RxOn()
+        {
+            RxPower = true;
+        }
+        public virtual void RxOff()
+        {
+            RxPower = false;
+        }
+        public virtual void TxOn()
+        {
+            if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            TxPower = true;
+            RequestSerialization();
+        }
+        public virtual void TxOff()
+        {
+            if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            TxPower = false;
+            RequestSerialization();
+        }
+        #endregion
 
         protected virtual void StartReceive()
         {
@@ -91,6 +111,7 @@ namespace UdonRadioCommunicationRedux
         #region callback
         public virtual void ChannelTransmitting() { }
         public virtual void ChannelNotTransmitting() { }
+        public virtual void OnUpdateChannel() { }
         #endregion
 
         #region event

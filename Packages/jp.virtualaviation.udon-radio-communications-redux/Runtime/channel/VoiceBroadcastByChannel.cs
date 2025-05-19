@@ -337,5 +337,51 @@ namespace UdonRadioCommunicationRedux
             }
         }
         #endregion
+
+        #region Debug
+        public void LoggingRxState()
+        {
+            foreach (int channel in RxChannelGainState.GetKeys().ToArray())
+            {
+                DataDictionary channelRxState = GetChildrenFromDictionary(RxChannelGainState, channel);
+                foreach (DataToken instanceId in channelRxState.GetKeys().ToArray())
+                {
+                    Debug.Log("Rx State ch:" + channel + ", id:" + instanceId.Int);
+                }
+            }
+            foreach (int channel in RxChannelReceivers.GetKeys().ToArray())
+            {
+                DataDictionary channelRxReceivers = GetChildrenFromDictionary(RxChannelReceivers, channel);
+                foreach (DataToken instance in channelRxReceivers.GetValues().ToArray())
+                {
+                    UdonSharpBehaviour usb = (UdonSharpBehaviour)instance.Reference;
+                    Debug.Log("Rx Receiver ch:" + channel + ", go:" + usb.transform.parent.name);
+                }
+            }
+        }
+        public void LoggingTxState()
+        {
+            foreach (int channel in TxChannelPlayerState.GetKeys().ToArray())
+            {
+                DataDictionary channelTxStatus = GetChildrenFromDictionary(TxChannelPlayerState, channel);
+                foreach (int playerId in channelTxStatus.GetKeys().ToArray())
+                {
+                    DataDictionary channelplayerTxStatus = GetChildrenFromDictionary(channelTxStatus, playerId);
+                    foreach (int instanceId in channelplayerTxStatus.GetKeys().ToArray())
+                    {
+                        Debug.Log("Tx State ch:" + channel + ", player:" + playerId + "receiver:" + instanceId);
+                    }
+                }
+            }
+            foreach (int playerId in TxPlayerChannelGain.GetKeys().ToArray())
+            {
+                DataDictionary playerTxGain = GetChildrenFromDictionary(TxPlayerChannelGain, playerId);
+                foreach (int channel in playerTxGain.GetKeys().ToArray())
+                {
+                    Debug.Log("Tx Gain player:" + playerId + ", ch:" + channel + "gain:" + playerTxGain[channel].Int);
+                }
+            }
+        }
+        #endregion
     }
 }

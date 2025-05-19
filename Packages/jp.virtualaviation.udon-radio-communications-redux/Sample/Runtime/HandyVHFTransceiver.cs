@@ -14,68 +14,46 @@ namespace UdonRadioCommunicationRedux.Sample
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class HandyVHFTransceiver : Transceiver
     {
+        [Tooltip("周波数最小値 x1000(整数で保持するため)")]
         public int minFrequency = 108000;
+        [Tooltip("周波数最小値 x1000(整数で保持するため)")]
+
         public int maxFrequency = 118000;
+        [Tooltip("周波数の変更段数（少な目）")]
         public int frequencyStep = 125;
+        [Tooltip("周波数の変更段数(大き目)")]
+
         public int fastFrequencyStep = 1000;
 
         [Header("Optional")]
+        [Tooltip("周波数表示部のテキスト")]
         public TextMeshPro frequencyText;
+        [Tooltip("周波数表示部のフォーマット")]
         public string frequencyTextFormat = "000.00";
-        [Tooltip("Drives bool parameters \"PowerOn\" and \"Talking\"")] public Animator animator;
-
-        #region Interaction
-        public void RxOn()
-        {
-            RxPower = true;
-        }
-        public void RxOff()
-        {
-            RxPower = false;
-        }
-        public void TxOn()
-        {
-            if (RxPower == false) return;
-            if (Networking.IsOwner(gameObject) == false)
-            {
-                Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            }
-            TxPower = true;
-            RequestSerialization();
-        }
-        public void TxOff()
-        {
-            TxPower = false;
-            RequestSerialization();
-        }
-
-        #endregion
-
+        [Tooltip("送信/受信状態インジゲータ用アニメータ")] public Animator animator;
 
         protected override void StartReceive()
         {
-            ValidateFrequency();
             base.StartReceive();
             // インジゲーターを更新
             animator.SetBool("PowerOn", true);
         }
         protected override void StopReceive()
         {
-            ValidateFrequency();
             base.StopReceive();
             // インジゲーターを更新
             animator.SetBool("PowerOn", false);
+            animator.SetBool("Talking", false);
+            animator.SetBool("Receiving", false);
         }
         protected override void StartTransmit()
         {
-            ValidateFrequency();
             base.StartTransmit();
             // インジゲーターを更新
             animator.SetBool("Talking", true);
         }
         protected override void StopTransmit()
         {
-            ValidateFrequency();
             base.StopTransmit();
             // インジゲーターを更新
             animator.SetBool("Talking", false);
@@ -98,7 +76,7 @@ namespace UdonRadioCommunicationRedux.Sample
         #endregion
 
         #region appearance
-        public void UpdateFrequencyText()
+        public override void OnUpdateChannel()
         {
             float freqencyInVisual = channel * 0.001f;
             if (frequencyText != null) frequencyText.text = freqencyInVisual.ToString(frequencyTextFormat);
@@ -106,15 +84,22 @@ namespace UdonRadioCommunicationRedux.Sample
         #endregion
 
         #region Frequency
-        public void IncreaseFrequency() { channel += frequencyStep; ValidateFrequency(); }
-        public void DecreaseFrequency() { channel -= frequencyStep; ValidateFrequency(); }
-        public void IncreaseFrequencyFast() { channel += fastFrequencyStep; ValidateFrequency(); }
-        public void DecreaseFrequencyFast() { channel -= fastFrequencyStep; ValidateFrequency(); }
-        private void ValidateFrequency()
+        public void IncreaseFrequency() { UpdateFrequency(channel + frequencyStep); }
+        public void DecreaseFrequency() { UpdateFrequency(channel - frequencyStep); }
+        public void IncreaseFrequencyFast() { UpdateFrequency(channel + fastFrequencyStep); }
+        public void DecreaseFrequencyFast() { UpdateFrequency(channel - fastFrequencyStep); }
+        private void UpdateFrequency(int nextFrequency)
         {
-            if (channel < minFrequency) channel = minFrequency;
-            if (channel > maxFrequency) channel = maxFrequency;
-            UpdateFrequencyText();
+            Channel = Mathf.Clamp(nextFrequency, minFrequency, maxFrequency);
+            if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            RequestSerialization();
+        }
+        #endregion
+
+        #region lifecycle
+        void Start()
+        {
+            Channel = Mathf.Clamp(Channel, minFrequency, maxFrequency);
         }
         #endregion
     }
