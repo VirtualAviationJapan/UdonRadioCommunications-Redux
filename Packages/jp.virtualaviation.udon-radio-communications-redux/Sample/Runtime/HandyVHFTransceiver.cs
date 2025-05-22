@@ -37,6 +37,11 @@ namespace UdonRadioCommunicationRedux.Sample
             if (RxPower != true) return;
             base.TxOn();
         }
+        public override void RxOff()
+        {
+            if (TxPower == true) TxOff();
+            base.RxOff();
+        }
 
         protected override void StartReceive()
         {
@@ -90,11 +95,11 @@ namespace UdonRadioCommunicationRedux.Sample
         #endregion
 
         #region Frequency
-        public void IncreaseFrequency() { UpdateChannel(channel + frequencyStep); }
-        public void DecreaseFrequency() { UpdateChannel(channel - frequencyStep); }
-        public void IncreaseFrequencyFast() { UpdateChannel(channel + fastFrequencyStep); }
-        public void DecreaseFrequencyFast() { UpdateChannel(channel - fastFrequencyStep); }
-        public override void UpdateChannel(int nextFrequency)
+        public void IncreaseFrequency() { SetChannel(channel + frequencyStep); }
+        public void DecreaseFrequency() { SetChannel(channel - frequencyStep); }
+        public void IncreaseFrequencyFast() { SetChannel(channel + fastFrequencyStep); }
+        public void DecreaseFrequencyFast() { SetChannel(channel - fastFrequencyStep); }
+        public override void SetChannel(int nextFrequency)
         {
             Channel = Mathf.Clamp(nextFrequency, minFrequency, maxFrequency);
             if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
