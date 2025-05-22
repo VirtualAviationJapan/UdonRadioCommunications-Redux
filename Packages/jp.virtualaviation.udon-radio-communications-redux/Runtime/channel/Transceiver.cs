@@ -27,7 +27,7 @@ namespace UdonRadioCommunicationRedux
                 if (txPower == true) StopTransmit();
                 channel = value;
                 if (rxPower == true) StartReceive();
-                if (rxPower == true && txPower == true) StartTransmit();
+                if (txPower == true) StartTransmit();
                 OnUpdateChannel();
             }
         }

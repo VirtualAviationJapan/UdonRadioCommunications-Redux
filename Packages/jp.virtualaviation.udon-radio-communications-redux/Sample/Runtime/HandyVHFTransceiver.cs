@@ -32,6 +32,12 @@ namespace UdonRadioCommunicationRedux.Sample
         public string frequencyTextFormat = "000.00";
         [Tooltip("送信/受信状態インジゲータ用アニメータ")] public Animator animator;
 
+        public override void TxOn()
+        {
+            if (RxPower != true) return;
+            base.TxOn();
+        }
+
         protected override void StartReceive()
         {
             base.StartReceive();
