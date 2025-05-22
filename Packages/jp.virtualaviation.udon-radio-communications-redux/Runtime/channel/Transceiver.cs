@@ -13,9 +13,9 @@ namespace UdonRadioCommunicationRedux
     public class Transceiver : UdonSharpBehaviour
     {
         public VoiceBroadcastByChannel channelManager;
-        [UdonSynced, FieldChangeCallback(nameof(Channel))] public int channel;
-        [UdonSynced, FieldChangeCallback(nameof(TxPower))] public bool txPower;
-        [FieldChangeCallback(nameof(RxPower))] public bool rxPower;
+        [UdonSynced, FieldChangeCallback(nameof(Channel))] protected int channel;
+        [UdonSynced, FieldChangeCallback(nameof(TxPower))] protected bool txPower;
+        [FieldChangeCallback(nameof(RxPower))] protected bool rxPower;
 
         public virtual int Channel
         {
@@ -89,7 +89,7 @@ namespace UdonRadioCommunicationRedux
             TxPower = false;
             RequestSerialization();
         }
-        public virtual void UpdateChannel(int nextChannel)
+        public virtual void SetChannel(int nextChannel)
         {
             Channel = nextChannel;
             if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
