@@ -15,10 +15,10 @@ namespace UdonRadioCommunicationRedux.Sample
     public class HandyVHFTransceiver : Transceiver
     {
         [Tooltip("周波数最小値 x1000(整数で保持するため)")]
-        public int minFrequency = 108000;
+        public int minFrequency = 118000;
         [Tooltip("周波数最小値 x1000(整数で保持するため)")]
 
-        public int maxFrequency = 118000;
+        public int maxFrequency = 136000;
         [Tooltip("周波数の変更段数（少な目）")]
         public int frequencyStep = 125;
         [Tooltip("周波数の変更段数(大き目)")]
@@ -84,11 +84,11 @@ namespace UdonRadioCommunicationRedux.Sample
         #endregion
 
         #region Frequency
-        public void IncreaseFrequency() { UpdateFrequency(channel + frequencyStep); }
-        public void DecreaseFrequency() { UpdateFrequency(channel - frequencyStep); }
-        public void IncreaseFrequencyFast() { UpdateFrequency(channel + fastFrequencyStep); }
-        public void DecreaseFrequencyFast() { UpdateFrequency(channel - fastFrequencyStep); }
-        private void UpdateFrequency(int nextFrequency)
+        public void IncreaseFrequency() { UpdateChannel(channel + frequencyStep); }
+        public void DecreaseFrequency() { UpdateChannel(channel - frequencyStep); }
+        public void IncreaseFrequencyFast() { UpdateChannel(channel + fastFrequencyStep); }
+        public void DecreaseFrequencyFast() { UpdateChannel(channel - fastFrequencyStep); }
+        public override void UpdateChannel(int nextFrequency)
         {
             Channel = Mathf.Clamp(nextFrequency, minFrequency, maxFrequency);
             if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
@@ -100,6 +100,11 @@ namespace UdonRadioCommunicationRedux.Sample
         void Start()
         {
             Channel = Mathf.Clamp(Channel, minFrequency, maxFrequency);
+        }
+        public override void OnPlayerRespawn(VRCPlayerApi player)
+        {
+            if (player.isLocal && txPower) TxPower = false;
+            if (player.isLocal && rxPower) RxPower = false;
         }
         #endregion
     }

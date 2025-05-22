@@ -496,12 +496,12 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 8531906538088463198}
   channelManager: {fileID: 0}
-  channel: 108000
+  channel: 118000
   txPower: 0
   rxPower: 0
   gain: 17
-  minFrequency: 108000
-  maxFrequency: 118000
+  minFrequency: 118000
+  maxFrequency: 136000
   frequencyStep: 125
   fastFrequencyStep: 1000
   frequencyText: {fileID: 248238841843223656}

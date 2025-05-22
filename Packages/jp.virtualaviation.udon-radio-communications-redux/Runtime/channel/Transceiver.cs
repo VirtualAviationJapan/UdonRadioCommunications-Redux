@@ -89,6 +89,12 @@ namespace UdonRadioCommunicationRedux
             TxPower = false;
             RequestSerialization();
         }
+        public virtual void UpdateChannel(int nextChannel)
+        {
+            Channel = nextChannel;
+            if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            RequestSerialization();
+        }
         #endregion
 
         protected virtual void StartReceive()
@@ -115,14 +121,6 @@ namespace UdonRadioCommunicationRedux
         #endregion
 
         #region event
-        public override void OnPlayerJoined(VRCPlayerApi player)
-        {
-            if (player.isLocal && txPower) StartTransmit();
-        }
-        public override void OnPlayerRespawn(VRCPlayerApi player)
-        {
-            if (player.isLocal && txPower) TxPower = false;
-        }
         public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
             if (player.isLocal && txPower) TxPower = false;
