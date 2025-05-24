@@ -41,13 +41,8 @@ namespace UdonRadioCommunicationRedux.Sample
 
         [Tooltip("周波数表示部のフォーマット")]
         [SerializeField] string frequencyTextFormat = "000.00";
-        [Tooltip("音量表示部のテキスト")]
-        [SerializeField] TextMeshPro volumeText;
 
-        [Tooltip("音量表示部のフォーマット")]
-        [SerializeField] string volumeTextFormat = "vol:#";
-
-        [Tooltip("送信/受信状態インジゲータ用アニメータ")]
+        [Tooltip("インジゲータ用アニメータ")]
         [SerializeField] Animator animator;
 
         public override void TxOn()
@@ -133,7 +128,7 @@ namespace UdonRadioCommunicationRedux.Sample
         }
         public override void OnUpdateGain()
         {
-            if (volumeText != null) volumeText.text = currentVolumeIndex.ToString(volumeTextFormat);
+            animator.SetInteger("Volume", currentVolumeIndex);
         }
         #endregion
 
