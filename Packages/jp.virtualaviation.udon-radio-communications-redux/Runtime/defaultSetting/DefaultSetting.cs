@@ -16,17 +16,21 @@ namespace UdonRadioCommunicationRedux
         [SerializeField] private float volumetricRadius = 0;
         [SerializeField] private bool lowpass = true;
         // protected abstract float validateVoiceGain(bool status);
-        public override void OnPlayerVoiceAdded(int playerId)
-        {
-            urc.SetVoiceGain(playerId, protocolPriority, gain);
-            urc.SetVoiceNear(playerId, protocolPriority, near);
-            urc.SetVoiceFar(playerId, protocolPriority, far);
-            urc.SetVoiceVolumetricRadius(playerId, protocolPriority, volumetricRadius);
-            urc.SetVoiceLowpass(playerId, protocolPriority, lowpass);
 
-            urc.EnableVoiceProtocol(playerId, protocolPriority);
+        public void SetDefaultSetting(int playerId, int priority)
+        {
+            urc.SetVoiceGain(playerId, priority, gain);
+            urc.SetVoiceNear(playerId, priority, near);
+            urc.SetVoiceFar(playerId, priority, far);
+            urc.SetVoiceVolumetricRadius(playerId, priority, volumetricRadius);
+            urc.SetVoiceLowpass(playerId, priority, lowpass);
         }
 
+        public override void OnPlayerVoiceAdded(int playerId)
+        {
+            SetDefaultSetting(playerId, protocolPriority);
+            urc.EnableVoiceProtocol(playerId, protocolPriority);
+        }
 
     }
 }
