@@ -14,34 +14,73 @@ namespace UdonRadioCommunicationRedux.Sample
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class HandyVHFTransceiver : Transceiver
     {
-        [Tooltip("周波数最小値 x1000(整数で保持するため)")]
-        public int minFrequency = 118000;
-        [Tooltip("周波数最小値 x1000(整数で保持するため)")]
+        [Header("Frequency")]
 
-        public int maxFrequency = 136000;
+        [Tooltip("周波数最小値 単位:kHz(整数)")]
+        [SerializeField] int minFrequency = 118000;
+
+        [Tooltip("周波数最小値  単位:kHz(整数)")]
+        [SerializeField] int maxFrequency = 136000;
+
         [Tooltip("周波数の変更段数（少な目）")]
-        public int frequencyStep = 125;
-        [Tooltip("周波数の変更段数(大き目)")]
+        [SerializeField] int frequencyStep = 125;
 
-        public int fastFrequencyStep = 1000;
+        [Tooltip("周波数の変更段数(大き目)")]
+        [SerializeField] int fastFrequencyStep = 1000;
+
+        [Header("Volume")]
+
+        [SerializeField]
+        float[] volummeArray = { 0, 12, 15, 17 };
+        [SerializeField] int currentVolumeIndex = 0;
+        [SerializeField] int defaultVolumeIndex = 2;
 
         [Header("Optional")]
         [Tooltip("周波数表示部のテキスト")]
-        public TextMeshPro frequencyText;
+        [SerializeField] TextMeshPro frequencyText;
+
         [Tooltip("周波数表示部のフォーマット")]
-        public string frequencyTextFormat = "000.00";
-        [Tooltip("送信/受信状態インジゲータ用アニメータ")] public Animator animator;
+        [SerializeField] string frequencyTextFormat = "000.00";
+        [Tooltip("音量表示部のテキスト")]
+        [SerializeField] TextMeshPro volumeText;
+
+        [Tooltip("音量表示部のフォーマット")]
+        [SerializeField] string volumeTextFormat = "vol:#";
+
+        [Tooltip("送信/受信状態インジゲータ用アニメータ")]
+        [SerializeField] Animator animator;
 
         public override void TxOn()
         {
             if (RxPower != true) return;
             base.TxOn();
         }
+        public override void TxOff()
+        {
+            base.TxOff();
+        }
+        public override void RxOn()
+        {
+            if (Gain == 0) SetVolume(defaultVolumeIndex);
+            base.RxOn();
+        }
         public override void RxOff()
         {
             if (TxPower == true) TxOff();
             base.RxOff();
         }
+
+        public void ToggleRx()
+        {
+            if (RxPower) RxOff();
+            else RxOn();
+        }
+        public void ToggleTx()
+        {
+            if (TxPower) TxOff();
+            else TxOn();
+        }
+
 
         protected override void StartReceive()
         {
@@ -92,6 +131,10 @@ namespace UdonRadioCommunicationRedux.Sample
             float freqencyInVisual = channel * 0.001f;
             if (frequencyText != null) frequencyText.text = freqencyInVisual.ToString(frequencyTextFormat);
         }
+        public override void OnUpdateGain()
+        {
+            if (volumeText != null) volumeText.text = currentVolumeIndex.ToString(volumeTextFormat);
+        }
         #endregion
 
         #region Frequency
@@ -107,10 +150,24 @@ namespace UdonRadioCommunicationRedux.Sample
         }
         #endregion
 
+        #region Volume
+        public void IncreaseVolume() { SetVolume(currentVolumeIndex + 1); }
+        public void DecreaseVolume() { SetVolume(currentVolumeIndex - 1); }
+        public void SetVolume(int index)
+        {
+            currentVolumeIndex = Mathf.Clamp(index, 0, volummeArray.Length - 1);
+            Gain = volummeArray[currentVolumeIndex];
+
+            if (RxPower == true && Gain == 0) RxOff();
+            if (RxPower == false && Gain != 0) RxOn();
+        }
+        #endregion
+
         #region lifecycle
         void Start()
         {
             Channel = Mathf.Clamp(Channel, minFrequency, maxFrequency);
+            Gain = volummeArray[currentVolumeIndex];
         }
         public override void OnPlayerRespawn(VRCPlayerApi player)
         {
