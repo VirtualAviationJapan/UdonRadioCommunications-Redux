@@ -34,38 +34,59 @@ namespace UdonRadioCommunicationRedux
         #region Voice Setting
         public void SetVoiceGain(int playerId, int priority, float gain)
         {
-            PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.SetVoiceGain(priority, gain);
+            if (playerVoices.TryGetValue(playerId, TokenType.Reference, out DataToken value))
+            {
+                PlayerVoice pv = (PlayerVoice)value.Reference;
+                pv.SetVoiceGain(priority, gain);
+            }
         }
         public void SetVoiceNear(int playerId, int priority, float near)
         {
-            PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.SetVoiceNear(priority, near);
+            if (playerVoices.TryGetValue(playerId, TokenType.Reference, out DataToken value))
+            {
+                PlayerVoice pv = (PlayerVoice)value.Reference;
+                pv.SetVoiceNear(priority, near);
+            }
         }
         public void SetVoiceFar(int playerId, int priority, float far)
         {
-            PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.SetVoiceFar(priority, far);
+            if (playerVoices.TryGetValue(playerId, TokenType.Reference, out DataToken value))
+            {
+                PlayerVoice pv = (PlayerVoice)value.Reference;
+                pv.SetVoiceFar(priority, far);
+            }
         }
         public void SetVoiceVolumetricRadius(int playerId, int priority, float radius)
         {
-            PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.SetVoiceVolumetricRadius(priority, radius);
+            if (playerVoices.TryGetValue(playerId, TokenType.Reference, out DataToken value))
+            {
+                PlayerVoice pv = (PlayerVoice)value.Reference;
+                pv.SetVoiceVolumetricRadius(priority, radius);
+            }
         }
         public void SetVoiceLowpass(int playerId, int priority, bool enabled)
         {
-            PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.SetVoiceLowpass(priority, enabled);
+            if (playerVoices.TryGetValue(playerId, TokenType.Reference, out DataToken value))
+            {
+                PlayerVoice pv = (PlayerVoice)value.Reference;
+                pv.SetVoiceLowpass(priority, enabled);
+            }
         }
         public void EnableVoiceProtocol(int playerId, int priority)
         {
-            PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.EnableVoiceProtocol(priority);
+            if (playerVoices.TryGetValue(playerId, TokenType.Reference, out DataToken value))
+            {
+                PlayerVoice pv = (PlayerVoice)value.Reference;
+                pv.EnableVoiceProtocol(priority);
+            }
         }
         public void DisableVoiceProtocol(int playerId, int priority)
         {
-            PlayerVoice pv = (PlayerVoice)playerVoices[playerId].Reference;
-            pv.DisableVoiceProtocol(priority);
+            if (playerVoices.TryGetValue(playerId, TokenType.Reference, out DataToken value))
+            {
+                PlayerVoice pv = (PlayerVoice)value.Reference;
+                pv.DisableVoiceProtocol(priority);
+            }
         }
         #endregion
 
