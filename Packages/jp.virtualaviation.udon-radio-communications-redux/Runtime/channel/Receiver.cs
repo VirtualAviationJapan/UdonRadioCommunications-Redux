@@ -48,6 +48,7 @@ namespace UdonRadioCommunicationRedux
             {
                 gain = value;
                 if (rxPower == true) StartReceive();
+                OnUpdateGain();
             }
         }
 
@@ -82,6 +83,7 @@ namespace UdonRadioCommunicationRedux
         public virtual void ChannelTransmitting() { }
         public virtual void ChannelNotTransmitting() { }
         public virtual void OnUpdateChannel() { }
+        public virtual void OnUpdateGain() { }
         #endregion
 
     }

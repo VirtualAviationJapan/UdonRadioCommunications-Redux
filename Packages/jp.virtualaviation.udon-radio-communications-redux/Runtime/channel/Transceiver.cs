@@ -16,6 +16,7 @@ namespace UdonRadioCommunicationRedux
         [UdonSynced, FieldChangeCallback(nameof(Channel))] protected int channel;
         [UdonSynced, FieldChangeCallback(nameof(TxPower))] protected bool txPower;
         [FieldChangeCallback(nameof(RxPower))] protected bool rxPower;
+        [FieldChangeCallback(nameof(Gain))] protected float gain;
 
         public virtual int Channel
         {
@@ -65,8 +66,16 @@ namespace UdonRadioCommunicationRedux
                 }
             }
         }
-
-        public float gain = 17;
+        public float Gain
+        {
+            get => gain;
+            set
+            {
+                gain = value;
+                if (rxPower == true) StartReceive();
+                OnUpdateGain();
+            }
+        }
 
         #region Interaction
         public virtual void RxOn()
@@ -95,6 +104,10 @@ namespace UdonRadioCommunicationRedux
             if (Networking.IsOwner(gameObject) == false) Networking.SetOwner(Networking.LocalPlayer, gameObject);
             RequestSerialization();
         }
+        public virtual void SetGain(int nextGain)
+        {
+            Gain = nextGain;
+        }
         #endregion
 
         protected virtual void StartReceive()
@@ -118,6 +131,7 @@ namespace UdonRadioCommunicationRedux
         public virtual void ChannelTransmitting() { }
         public virtual void ChannelNotTransmitting() { }
         public virtual void OnUpdateChannel() { }
+        public virtual void OnUpdateGain() { }
         #endregion
 
         #region event
