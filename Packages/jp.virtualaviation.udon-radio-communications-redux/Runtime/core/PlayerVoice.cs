@@ -76,6 +76,7 @@ namespace UdonRadioCommunicationRedux
                 {
                     currentSelectedProtocol = i;
                     EnableVoiceProtocol(i);
+                    break;
                 }
             }
         }
