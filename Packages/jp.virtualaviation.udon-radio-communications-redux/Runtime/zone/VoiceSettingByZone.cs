@@ -52,7 +52,7 @@ namespace UdonRadioCommunicationRedux
             if (zone == prevZone)
             {
                 ZoneByPlayer.Remove(player.playerId);
-                urc.DisableVoiceProtocol(player.playerId, protocolPriority);
+                ValidateVoice(player.playerId, null);
             }
         }
 
@@ -115,7 +115,7 @@ namespace UdonRadioCommunicationRedux
             else
             {
                 ZoneByPlayer.Remove(player.playerId);
-                urc.DisableVoiceProtocol(player.playerId, protocolPriority);
+                ValidateVoice(player.playerId, null);
             }
 
         }
