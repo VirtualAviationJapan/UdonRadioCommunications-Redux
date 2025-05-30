@@ -61,7 +61,7 @@ namespace UdonRadioCommunicationRedux.Sample
         }
         public override void RxOff()
         {
-            if (TxPower == true) TxOff();
+            if (Networking.IsOwner(gameObject) == true && TxPower == true) TxOff();
             base.RxOff();
         }
 

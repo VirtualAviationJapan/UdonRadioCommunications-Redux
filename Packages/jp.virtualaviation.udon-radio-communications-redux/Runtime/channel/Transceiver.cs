@@ -45,7 +45,6 @@ namespace UdonRadioCommunicationRedux
                 else
                 {
                     StopReceive();
-                    StopTransmit();
                 }
             }
         }
