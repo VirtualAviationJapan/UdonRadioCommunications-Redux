@@ -33,6 +33,11 @@ namespace UdonRadioCommunicationRedux
         /// </summary>
         private DataDictionary TxPlayerChannelGain = new DataDictionary();
 
+        /// <summary>
+        /// あるチャンネルに紐づいた、プレイヤー以外のGameObject.
+        /// </summary>
+        private DataDictionary TxChannelLocalObject = new DataDictionary();
+
         // 制約条件として、near, far, volumetricradiusは実行中固定値扱いとする
         [SerializeField] private float near = 99998;
         [SerializeField] private float far = 99999;
@@ -94,8 +99,16 @@ namespace UdonRadioCommunicationRedux
                     UpdatePlayerVoiceGain(playerId, playerTxGain);
                 }
             }
+
+            // プレイヤー以外の、チャンネルに紐づいた音声を有効化する
+            DataDictionary transmittingLocalObjects = GetChildrenFromDictionary(TxChannelLocalObject, channel);
+            foreach (DataToken instance in transmittingLocalObjects.GetValues().ToArray())
+            {
+                GameObject targetGO = (GameObject)instance.Reference;
+                targetGO.SetActive(true);
+            }
             // 受信機に、送信中の送信機の有無を通知する
-            if (transmittingPlayers.Count > 0)
+            if (transmittingPlayers.Count + transmittingLocalObjects.Count > 0)
             {
                 receriver.SendCustomEvent("ChannelTransmitting");
             }
@@ -143,6 +156,19 @@ namespace UdonRadioCommunicationRedux
                     UpdatePlayerVoiceGain(playerId, playerTxGain);
                 }
             }
+            // プレイヤー以外の、チャンネルに紐づいた音声を無効化する
+            if (nextChannelGain <= 0)
+            {
+                DataDictionary transmittingLocalObjects = GetChildrenFromDictionary(TxChannelLocalObject, channel);
+                foreach (DataToken instance in transmittingLocalObjects.GetValues().ToArray())
+                {
+                    GameObject targetGO = (GameObject)instance.Reference;
+                    targetGO.SetActive(false);
+                }
+            }
+
+            // 受信機に、送信中の送信機の有無を通知する
+            receriver.SendCustomEvent("ChannelNotTransmitting");
         }
 
         /// <summary>
@@ -210,6 +236,19 @@ namespace UdonRadioCommunicationRedux
             CallbackRxTransmittingState(channel);
         }
 
+        public void AddLocalObject(int channel, GameObject go)
+        {
+            DataDictionary channelLocalObject = GetChildrenFromDictionary(TxChannelLocalObject, channel);
+            channelLocalObject[go.GetInstanceID()] = go;
+            TxChannelLocalObject[channel] = channelLocalObject;
+        }
+        public void RemoveLocalObject(int channel, GameObject go)
+        {
+            DataDictionary channelLocalObject = GetChildrenFromDictionary(TxChannelLocalObject, channel);
+            channelLocalObject.Remove(go.GetInstanceID());
+            TxChannelLocalObject[channel] = channelLocalObject;
+        }
+
         #endregion
 
         #region voice manipulation
@@ -253,7 +292,9 @@ namespace UdonRadioCommunicationRedux
         {
             DataDictionary channelRxReceivers = GetChildrenFromDictionary(RxChannelReceivers, channel);
             DataList transmittingPlayers = GetTransmitingPlayers(TxChannelPlayerState, channel);
-            if (transmittingPlayers.Count > 0)
+            DataDictionary transmittingLocalObjects = GetChildrenFromDictionary(TxChannelLocalObject, channel);
+
+            if (transmittingPlayers.Count + transmittingLocalObjects.Count > 0)
             {
                 foreach (DataToken instance in channelRxReceivers.GetValues().ToArray())
                 {
