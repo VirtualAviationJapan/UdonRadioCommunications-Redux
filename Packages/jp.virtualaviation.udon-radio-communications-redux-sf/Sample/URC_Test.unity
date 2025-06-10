@@ -558,11 +558,11 @@ PrefabInstance:
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: AAMTargets.Array.data[0]
       value: 
-      objectReference: {fileID: 1228325203}
+      objectReference: {fileID: 401667064}
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: AAMTargets.Array.data[1]
       value: 
-      objectReference: {fileID: 401667064}
+      objectReference: {fileID: 1228325203}
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: serializationData.Prefab
       value: 
@@ -7636,11 +7636,11 @@ PrefabInstance:
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: AAMTargets.Array.data[0]
       value: 
-      objectReference: {fileID: 1507535588}
+      objectReference: {fileID: 401667064}
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: AAMTargets.Array.data[1]
       value: 
-      objectReference: {fileID: 401667064}
+      objectReference: {fileID: 1507535588}
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: serializationData.Prefab
       value: 
