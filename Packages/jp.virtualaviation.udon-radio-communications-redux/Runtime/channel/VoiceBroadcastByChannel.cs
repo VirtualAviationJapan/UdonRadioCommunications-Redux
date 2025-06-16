@@ -425,65 +425,65 @@ namespace UdonRadioCommunicationRedux
                 }
             }
         }
-        public override void OnPlayerRespawn(VRCPlayerApi player)
-        {
-            // 各プレイヤーと近接しているか否かをチェックする
-            if (player.isLocal == true)
-            {
-                var players = new VRCPlayerApi[VRCPlayerApi.GetPlayerCount()];
-                VRCPlayerApi.GetPlayers(players);
-                foreach (var p in players)
-                {
-                    // 当該プレイヤーが、ローカルプレイヤーと近接しているか否かの状態を更新する
-                    UpdateIsPlayerNearby(p);
-                    // 当該プレイヤーの、状態更新後の音量を更新する
-                    if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
-                    {
-                        UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
-                    }
-                }
-            }
-            else
-            {
-                // 当該プレイヤーが、ローカルプレイヤーと近接しているか否かの状態を更新する
-                UpdateIsPlayerNearby(player);
-                // 当該プレイヤーの、状態更新後の音量を更新する
-                if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
-                {
-                    UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
-                }
-            }
-        }
+        // public override void OnPlayerRespawn(VRCPlayerApi player)
+        // {
+        //     // 各プレイヤーと近接しているか否かをチェックする
+        //     if (player.isLocal == true)
+        //     {
+        //         var players = new VRCPlayerApi[VRCPlayerApi.GetPlayerCount()];
+        //         VRCPlayerApi.GetPlayers(players);
+        //         foreach (var p in players)
+        //         {
+        //             // 当該プレイヤーが、ローカルプレイヤーと近接しているか否かの状態を更新する
+        //             UpdateIsPlayerNearby(p);
+        //             // 当該プレイヤーの、状態更新後の音量を更新する
+        //             if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
+        //             {
+        //                 UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // 当該プレイヤーが、ローカルプレイヤーと近接しているか否かの状態を更新する
+        //         UpdateIsPlayerNearby(player);
+        //         // 当該プレイヤーの、状態更新後の音量を更新する
+        //         if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
+        //         {
+        //             UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
+        //         }
+        //     }
+        // }
 
-        public override void OnPlayerTriggerEnter(VRCPlayerApi player)
-        {
-            if (player.isLocal) return;
-            IsPlayerNearby[player.playerId] = true;
-            // 当該プレイヤーの、状態更新後の音量を更新する
-            if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
-            {
-                UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
-            }
-        }
-        public override void OnPlayerTriggerExit(VRCPlayerApi player)
-        {
-            if (player.isLocal) return;
-            IsPlayerNearby[player.playerId] = false;
-            // 当該プレイヤーの、状態更新後の音量を更新する
-            if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
-            {
-                UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
-            }
-        }
+        // public override void OnPlayerTriggerEnter(VRCPlayerApi player)
+        // {
+        //     if (player.isLocal) return;
+        //     IsPlayerNearby[player.playerId] = true;
+        //     // 当該プレイヤーの、状態更新後の音量を更新する
+        //     if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
+        //     {
+        //         UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
+        //     }
+        // }
+        // public override void OnPlayerTriggerExit(VRCPlayerApi player)
+        // {
+        //     if (player.isLocal) return;
+        //     IsPlayerNearby[player.playerId] = false;
+        //     // 当該プレイヤーの、状態更新後の音量を更新する
+        //     if (TxPlayerChannelGain.TryGetValue(player.playerId, TokenType.DataDictionary, out DataToken value))
+        //     {
+        //         UpdatePlayerVoiceGain(player.playerId, value.DataDictionary);
+        //     }
+        // }
 
-        void Update()
-        {
-            // 常にプレイヤーに追従させる
-            if (Utilities.IsValid(localPlayer) == true)
-            {
-                transform.position = localPlayer.GetPosition();
-            }
-        }
+        // void Update()
+        // {
+        //     // 常にプレイヤーに追従させる
+        //     if (Utilities.IsValid(localPlayer) == true)
+        //     {
+        //         transform.position = localPlayer.GetPosition();
+        //     }
+        // }
         #endregion
 
         #region Debug
@@ -526,7 +526,7 @@ namespace UdonRadioCommunicationRedux
                 DataDictionary playerTxGain = GetChildrenFromDictionary(TxPlayerChannelGain, playerId);
                 foreach (int channel in playerTxGain.GetKeys().ToArray())
                 {
-                    Debug.Log("Tx Gain player:" + playerId + ", ch:" + channel + "gain:" + playerTxGain[channel].Int);
+                    Debug.Log("Tx Gain player:" + playerId + ", ch:" + channel + "gain:" + playerTxGain[channel].Float);
                 }
             }
         }

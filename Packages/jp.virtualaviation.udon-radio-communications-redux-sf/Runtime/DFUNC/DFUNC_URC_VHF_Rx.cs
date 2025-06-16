@@ -35,19 +35,18 @@ namespace UdonRadioCommunicationRedux.SaccFlight
 
 
         #region DFUNC Left/Right Recognize
+        private bool LeftDial = false;
         // DFUNC初期化時に、左右どちらかをEntityから伝達する箇所
         private string triggerAxis = "Oculus_CrossPlatform_PrimaryIndexTrigger";
         private VRCPlayerApi.TrackingDataType trackingTarget;
 
         public void DFUNC_LeftDial()
         {
-            triggerAxis = "Oculus_CrossPlatform_PrimaryIndexTrigger";
-            trackingTarget = VRCPlayerApi.TrackingDataType.LeftHand;
+            LeftDial = true;
         }
         public void DFUNC_RightDial()
         {
-            triggerAxis = "Oculus_CrossPlatform_SecondaryIndexTrigger";
-            trackingTarget = VRCPlayerApi.TrackingDataType.RightHand;
+            LeftDial = false;
         }
         #endregion
 
@@ -57,6 +56,17 @@ namespace UdonRadioCommunicationRedux.SaccFlight
             var entity = GetComponentInParent<SaccEntity>();
             switchFunctionSound = entity.SwitchFunctionSound;
             controlsRoot = entity.transform;
+
+            if (LeftDial == true)
+            {
+                triggerAxis = "Oculus_CrossPlatform_PrimaryIndexTrigger";
+                trackingTarget = VRCPlayerApi.TrackingDataType.LeftHand;
+            }
+            else
+            {
+                triggerAxis = "Oculus_CrossPlatform_SecondaryIndexTrigger";
+                trackingTarget = VRCPlayerApi.TrackingDataType.RightHand;
+            }
 
             if (RxIndicator) RxIndicator.SetActive(urc_vhf.RxPower);
             if (RxRecervingIndicator) RxRecervingIndicator.SetActive(false);

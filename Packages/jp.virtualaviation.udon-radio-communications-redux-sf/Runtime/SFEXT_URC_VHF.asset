@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: SFEXT_URC_VHF
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: c5c41f7530acd264db7dc91fd57f0c0c, type: 2}
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 08ba5dec77370be45835123761958052, type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: c58d74fd7aad3134f8fe161fe4e7cb95, type: 3}

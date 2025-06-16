@@ -16,7 +16,7 @@ namespace UdonRadioCommunicationRedux
         [UdonSynced, FieldChangeCallback(nameof(Channel))] protected int channel;
         [UdonSynced, FieldChangeCallback(nameof(TxPower))] protected bool txPower;
         [FieldChangeCallback(nameof(RxPower))] protected bool rxPower;
-        [FieldChangeCallback(nameof(Gain))] protected float gain;
+        [FieldChangeCallback(nameof(Gain))] protected float gain = 17;
 
         public virtual int Channel
         {
