@@ -15,18 +15,28 @@ namespace UdonRadioCommunicationRedux.SaccFlight
         public SFEXT_URC_VHF urc_vhf;
         public GameObject TxIndicator;
         public KeyCode desktopKey = KeyCode.P;
-        private string triggerAxis;
+        private string triggerAxis = "Oculus_CrossPlatform_PrimaryIndexTrigger";
 
+        private bool LeftDial = false;
         public void DFUNC_LeftDial()
         {
-            triggerAxis = "Oculus_CrossPlatform_PrimaryIndexTrigger";
+            LeftDial = true;
         }
         public void DFUNC_RightDial()
         {
-            triggerAxis = "Oculus_CrossPlatform_SecondaryIndexTrigger";
+            LeftDial = false;
         }
+
         public void SFEXT_L_EntityStart()
         {
+            if (LeftDial == true)
+            {
+                triggerAxis = "Oculus_CrossPlatform_PrimaryIndexTrigger";
+            }
+            else
+            {
+                triggerAxis = "Oculus_CrossPlatform_SecondaryIndexTrigger";
+            }
             gameObject.SetActive(false);
             if (TxIndicator) TxIndicator.SetActive(urc_vhf.TxPower);
 
