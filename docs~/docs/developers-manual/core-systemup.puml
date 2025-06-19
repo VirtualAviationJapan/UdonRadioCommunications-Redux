@@ -1,0 +1,12 @@
+@startuml
+    actor "Local Player" as LP
+    boundary VoiceProtocol
+    entity UdonRadioCommunication as URC
+    entity PlayerVoice
+    actor "Each Player" as EP
+
+    VoiceProtocol -> URC: EnableVoiceProtocol(playerId, priority)
+    
+    PlayerVoice -> EP : SetGain 
+
+@enduml
