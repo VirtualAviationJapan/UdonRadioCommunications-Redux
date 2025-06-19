@@ -95,7 +95,7 @@ namespace UdonRadioCommunicationRedux
         {
             for (int i = 0; i < voiceProtocols.Length; i++)
             {
-                voiceProtocols[i].protocolPriority = i;
+                if (voiceProtocols[i]) voiceProtocols[i].protocolPriority = i;
             }
         }
         #endregion
