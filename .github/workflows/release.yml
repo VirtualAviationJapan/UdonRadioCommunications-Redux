@@ -1,0 +1,53 @@
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - uses: actions/checkout@v4
+      # Set environment Variables
+      - name: Set Environment Variables
+        run: |
+          echo ${{ github.ref_name }} | sed -e 's/^v//' | xargs -I {} echo "TAG={}" >> "$GITHUB_ENV"
+      - name: Create Package Zip
+        id: make_zip
+        run: |
+          find ${{ github.workspace }}/Packages -name 'package.json'|xargs dirname|awk -F "/" '{ printf "cd %s; zip -rq %s-${{env.TAG}}.zip *\n", $0, $NF }'|xargs -i sh -c "{}"
+          find . -name '*.zip'| xargs -i mv {} .
+          find . -name '*.zip'|xargs -L 1 basename|xargs -i echo "${{ env.packagePath }}/{}" |tr '\n' ','| jq -c -R 'split(",")'|xargs -i echo files={} >> $GITHUB_OUTPUT
+      - name: Check Package Zip
+        run:  echo ${{steps.make_zip.outputs.files}}
+        
+      # Build a list of .meta files for future use
+      - name: Track Package Meta Files
+        run: find "Packages/jp.virtualaviation.udon-radio-communications-redux/" -name \*.meta >> metaList
+      - uses: pCYSl5EDgo/create-unitypackage@master
+        with:
+          package-path: 'udon-radio-communications-redux-${{env.TAG}}.unitypackage'
+          include-files: metaList
+      # Build a list of .meta files for future use
+      - name: Track Package Meta Files
+        run: find "Packages/jp.virtualaviation.udon-radio-communications-redux-sf/" -name \*.meta >> metaList_sf
+      - uses: pCYSl5EDgo/create-unitypackage@master
+        with:
+          package-path: 'udon-radio-communications-redux-${{env.TAG}}.unitypackage'
+          include-files: metaList_sf
+      - name: Make Release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+        with:
+          files: |
+            *.zip
+            package.json
+            ${{ env.packagePath }}/package.json
+          tag_name: ${{ env.version }}
+
