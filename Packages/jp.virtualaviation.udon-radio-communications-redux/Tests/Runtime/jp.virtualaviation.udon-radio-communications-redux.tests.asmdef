@@ -1,0 +1,19 @@
+{
+    "name": "jp.virtualaviation.udon-radio-communications-redux.tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:37d17c96bd063da4289dd59e9feea16d"
+    ],
+	"optionalUnityReferences": [
+	  "TestAssemblies"
+	],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
