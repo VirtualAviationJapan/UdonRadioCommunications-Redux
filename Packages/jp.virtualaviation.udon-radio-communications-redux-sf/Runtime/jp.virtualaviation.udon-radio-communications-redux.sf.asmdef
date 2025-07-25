@@ -1,0 +1,22 @@
+{
+    "name": "jp.virtualaviation.udon-radio-communications-redux.sf",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6490804aa441dfe4b88eb56cccbdf081",
+        "GUID:3456780c4fb2d324ab9c633d6f1b0ddb",
+        "GUID:3c1bc1267eab5884ebe7f232c09ee0d9",
+        "GUID:99835874ee819da44948776e0df4ff1d",
+        "GUID:37d17c96bd063da4289dd59e9feea16d",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:823e7b1dbeb8b2a4c9d5014bf2a39093"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
