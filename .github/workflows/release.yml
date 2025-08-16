@@ -8,7 +8,7 @@ name: Release
 # 3. GitHub ReleaseのAssetsとしてアップロード
 # 4. VPMリポジトリにパッケージをプッシュ
 
-# VPMリポジトリへのプッシュには、`VPM_REPO_PAT`という名前のPersonal Access Tokenが必要?
+# VPMリポジトリへのプッシュには、`VPM_REPO_PAT`という名前のPersonal Access Tokenが必要
 
 permissions:
   contents: write
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # Set environment Variables
-      - name: Set Environment Variables
+      - name: Set Environment Variablesq
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
             VERSION=$(echo "${GITHUB_REF}" | sed 's#refs/tags/v##')
@@ -86,7 +86,7 @@ jobs:
         with:
           repository: 'VirtualAviationJapan/vpm'
           path: 'vpm-repo'
-          # token: ${{ secrets.VPM_REPO_PAT }}
+          token: ${{ secrets.VPM_REPO_PAT }}
 
       - name: Copy artifact to target repository
         run: |
@@ -96,7 +96,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          # token: ${{ secrets.VPM_REPO_PAT }}
+          token: ${{ secrets.VPM_REPO_PAT }}
           path: vpm-repo
           commit-message: "add: URC-Redux v${{ env.VERSION }} packages"
           title: "Update URC-Redux packages to v${{ env.VERSION }}"
