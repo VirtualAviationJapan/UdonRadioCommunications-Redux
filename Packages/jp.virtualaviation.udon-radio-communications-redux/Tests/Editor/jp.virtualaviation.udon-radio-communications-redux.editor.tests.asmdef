@@ -1,5 +1,5 @@
 {
-    "name": "jp.virtualaviation.udon-radio-communications-redux.editor.tests",
+    "name": "jp.virtualaviation.urc-redux.editor.tests",
     "rootNamespace": "",
     "references": [
         "GUID:b39e3985eab47b740b9ac0320ebc3795",
