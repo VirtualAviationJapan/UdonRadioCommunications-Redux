@@ -8869,11 +8869,11 @@ PrefabInstance:
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: AAMTargets.Array.data[0]
       value: 
-      objectReference: {fileID: 743409399}
+      objectReference: {fileID: 32086839}
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: AAMTargets.Array.data[1]
       value: 
-      objectReference: {fileID: 32086839}
+      objectReference: {fileID: 743409399}
     - target: {fileID: 1418542730802290580, guid: d0bc27a52ab4f444597248085e762ee4, type: 3}
       propertyPath: serializationData.Prefab
       value: 
@@ -9204,14 +9204,6 @@ MonoBehaviour:
   useAssignedLayers: 0
   DynamicPrefabs: []
   DynamicMaterials:
-  - {fileID: 2100000, guid: 1856b7928a21e284fa348cd123b8960b, type: 2}
-  - {fileID: 2100000, guid: 2c42f254f2c82094491837bfb29970b5, type: 2}
-  - {fileID: 2100000, guid: 9b2f264f8b4023041a29d3f12bf0537f, type: 2}
-  - {fileID: -650183199452562377, guid: ff82d4a324d88b244afd50d98b7d15fc, type: 2}
-  - {fileID: 0}
-  - {fileID: -650183199452562377, guid: 774b3eeb4e1519141800e9de845cf247, type: 2}
-  - {fileID: 0}
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 2100000, guid: 0f594b6c9564be84a9fa6ab3c06cb79f, type: 2}
   - {fileID: 2100000, guid: fb97bea485e1ec641970a206dc78a29f, type: 2}
   - {fileID: 2100000, guid: ae383406f61f43f42af46d904c2398d2, type: 2}
@@ -9224,6 +9216,14 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 96ecf232518da1a4db22826d38d0f7b8, type: 2}
   - {fileID: 2100000, guid: 86946e8940c313d48860533cc53578fe, type: 2}
   - {fileID: 2100000, guid: 8f611ece87d4f4a428e2d4b2d3dd4b95, type: 2}
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: -650183199452562377, guid: ff82d4a324d88b244afd50d98b7d15fc, type: 2}
+  - {fileID: 0}
+  - {fileID: 2100000, guid: 1856b7928a21e284fa348cd123b8960b, type: 2}
+  - {fileID: 2100000, guid: 2c42f254f2c82094491837bfb29970b5, type: 2}
+  - {fileID: 2100000, guid: 9b2f264f8b4023041a29d3f12bf0537f, type: 2}
+  - {fileID: -650183199452562377, guid: 774b3eeb4e1519141800e9de845cf247, type: 2}
+  - {fileID: 0}
   - {fileID: 2100000, guid: 33ca8e9bddf43b5468b2bfc558226765, type: 2}
   - {fileID: -650183199452562377, guid: cd8d17dce605e624681600984cb11b7f, type: 2}
   - {fileID: 0}

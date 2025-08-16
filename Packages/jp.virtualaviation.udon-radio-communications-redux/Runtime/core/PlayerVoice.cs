@@ -70,7 +70,7 @@ namespace UdonRadioCommunicationRedux
         {
             enableProtocol[protocolPriority] = false;
             if (currentSelectedProtocol > protocolPriority) return;
-            for (int i = currentSelectedProtocol - 1; i >= 0; i--)
+            for (int i = currentSelectedProtocol; i >= 0; i--)
             {
                 if (enableProtocol[i] == true)
                 {

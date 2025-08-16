@@ -16,7 +16,10 @@ namespace UdonRadioCommunicationRedux
 
         public override void OnPlayerVoiceAdded(int playerId)
         {
-
+            if (Networking.LocalPlayer.playerId != playerId)
+            {
+                ValidateVoice(playerId, null);
+            }
         }
 
         #region API: zone registration

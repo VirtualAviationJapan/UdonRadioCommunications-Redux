@@ -1,43 +1,20 @@
 # Changelog
 
-このページでは、UdonRadioCommunications-Redux の各バージョンでの変更点を記録しています。
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog].
+
+[Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
+### Added
 
-### 追加予定
-- 今後の機能拡張や改善点がここに記載されます
+### Changed
 
-## [1.0.0] - 2024-XX-XX
+### Deprecated
 
-### 追加
-- 初期リリース
-- 柔軟な送受信システム
-  - 送受信モジュールの抽象化
-  - 複数の送受信モジュールの同時管理
-- 高度な拡声機能
-  - 特定の人物に対する拡声/標準/サイレントの切り替え機能
-  - ゾーン情報を利用した拡声状態の自動制御
-  - ゾーンを跨いでの拡声状態の変更や、機内音声による拡声状態のオーバーライド機能
-- 音声 On/Off 機能
-  - 特定音声の On/Off を任意に設定
-  - 設定に基づいた GameObject の On/Off 制御
+### Removed
 
-### 変更
-- 従来型の UdonRadioCommunication からの完全な再設計
-- パフォーマンスと拡張性の向上
+### Fixed
 
-### 修正
-- 従来型システムで見られた既知の問題の解決
-
-## 変更履歴の形式について
-
-このチェンジログは [Keep a Changelog](https://keepachangelog.com/ja/1.0.0/) の推奨形式に基づいています。
-
-各バージョンの変更は以下のカテゴリに分類されます：
-
-- **追加**: 新機能
-- **変更**: 既存機能の変更
-- **非推奨**: 将来的に削除される予定の機能
-- **削除**: 削除された機能
-- **修正**: バグ修正
-- **セキュリティ**: セキュリティ脆弱性の修正
+### Security

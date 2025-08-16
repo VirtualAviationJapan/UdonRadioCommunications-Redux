@@ -14,21 +14,10 @@
   },
   "license": "MIT",
   "author": {
-    "name": "esnya"
+    "name": "VirtualAviationJapan"
   },
   "workspaces": [
     "Packages/*"
   ],
-  "scripts": {
-    "publish": "npm publish -ws",
-    "version": "npm version -ws ${npm_package_version}"
-  },
-  "devDependencies": {
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^8.0.4",
-    "@semantic-release/npm": "^9.0.1",
-    "semantic-release": "^20.1.0",
-    "semantic-release-gitmoji": "^1.4.5"
-  },
   "unity": "2022.3"
 }

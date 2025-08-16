@@ -1,0 +1,47 @@
+name: Release Preparation
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: merge changes(temp)
+        run: | 
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge --squash origin/develop
+      - name: Determine next version from commits
+        id: tag_action
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dry_run: true 
+          default_bump: "patch" 
+      - name: Create Pull Request with new version
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(release): ${{ steps.tag_action.outputs.new_tag }}"
+          title: "${{ steps.tag_action.outputs.new_tag }}"
+          body: |
+            **${{ steps.tag_action.outputs.new_tag }}**.
+            Changelog:
+            ```
+            ${{ steps.tag_action.outputs.changelog }}
+            ```
+          # リリース準備用のブランチ名
+          branch: "release/${{ steps.tag_action.outputs.new_tag }}"
+          base: "master"
+          labels: |
+            release
+            automated pr
