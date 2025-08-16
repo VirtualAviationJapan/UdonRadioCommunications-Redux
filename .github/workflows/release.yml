@@ -84,6 +84,7 @@ jobs:
           name: "Release v${{ steps.set-version.outputs.version }}"
           # The tag name for the release. The action infers this from the event.
           tag_name: ${{ github.ref_name }}
+
   push-to-vpm:
     needs: create-release # run after asset upload
     runs-on: ubuntu-latest
@@ -104,9 +105,12 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Copy artifact to target repository
-        run: |
-          mkdir -p vpm-repo/packages
-          cp -a release/*.json vpm-repo/packages/
+        uses: robinraju/release-downloader@v1
+        with:
+          tag: "v${{ needs.create-release.outputs.version }}"
+          fileName: "*.json"
+          out-file-path: "vpm-repo/packages"
+          extract: true
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
