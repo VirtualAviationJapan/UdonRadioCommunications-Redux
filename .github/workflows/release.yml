@@ -30,10 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Set environment Variables
-      - name: Set Environment Variablesq
+      - name: Set Environment Variables
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
             VERSION=$(echo "${GITHUB_REF}" | sed 's#refs/tags/v##')
@@ -89,7 +89,7 @@ jobs:
           private-key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Checkout VPM Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: 'VirtualAviationJapan/vpm'
           path: 'vpm-repo'
