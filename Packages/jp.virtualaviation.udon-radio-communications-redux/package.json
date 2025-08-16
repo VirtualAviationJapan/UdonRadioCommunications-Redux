@@ -1,7 +1,7 @@
 {
   "name": "jp.virtualaviation.urc-redux",
   "displayName": "Udon Radio Communications Redux",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": false,
   "description": "Simplified radio communication system for VRChat Udon worlds.",
   "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux",
