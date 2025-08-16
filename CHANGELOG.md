@@ -18,5 +18,3 @@ The format is based on [Keep a Changelog].
 ### Fixed
 
 ### Security
-
-
