@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": false,
   "description": "Simplified radio communication system for VRChat Udon worlds.",
-  "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux",
+  "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux/releases/download/v0.1.0/jp.virtualaviation.urc-redux-sf-0.1.0.zip",
   "homepage": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux#readme",
   "bugs": {
     "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux/issues"
@@ -16,7 +16,7 @@
   "license": "MIT",
   "author": {
     "name": "VirtualAviationJapan",
-    "url": "https://virtualaviation.jp"
+    "email": "41898282+github-actions[bot]@users.noreply.github.com"
   },
   "unity": "2022.3",
   "vpmDependencies": {
