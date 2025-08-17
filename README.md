@@ -13,8 +13,9 @@ Aims replacement of [UdonRadioCommunications](https://github.com/esnya/UdonRadio
 1. ALCOMかVRChat Creators Companionをインストールしてください。
 2. リンク先からVPMリポジトリを追加してください。[リンク先](https://vpm.virtualaviation.jp/redirect).
 3. VPM経由でインストールしてください
-
+---
 1. Install ALCOM or VRChat Creators Companion.
 2. Add VPM Repository [Click here](https://vpm.virtualaviation.jp/redirect).
 3. Install via VPM.
+
 
