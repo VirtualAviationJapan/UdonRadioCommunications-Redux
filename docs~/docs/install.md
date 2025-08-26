@@ -1,3 +1,8 @@
+---
+title: Installation
+sidebar_position: 1
+---
+
 # 導入方法
 
 ## SaccFlightと組み合わせる場合
