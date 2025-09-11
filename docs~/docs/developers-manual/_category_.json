@@ -1,0 +1,8 @@
+{
+  "label": "Developer Manual",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "UdonRadioCommunications-Redux の内部構造と拡張方法について説明します。"
+  }
+}
