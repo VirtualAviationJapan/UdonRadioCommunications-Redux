@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": false,
   "description": "Simplified radio communication system for VRChat Udon worlds.",
-  "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux/releases/download/v0.1.1/jp.virtualaviation.urc-redux-sf-0.1.1.zip",
+  "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux/releases/download/v0.1.1/jp.virtualaviation.udon-radio-communications-redux-sf-0.1.1.zip",
   "homepage": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux#readme",
   "bugs": {
     "url": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux/issues"
