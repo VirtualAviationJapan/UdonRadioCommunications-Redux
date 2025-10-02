@@ -19,11 +19,6 @@ The format is based on [Keep a Changelog].
 
 ### Security
 
-## [v0.1.1]
-### Fixed
-
-* fix asmdef setting. ([71c8110](https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux/commit/71c811099bfa203849d006da2cc471e47fe73749))
-
 ## [v0.1.0]
 
 ### Added
