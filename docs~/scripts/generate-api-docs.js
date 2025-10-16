@@ -112,9 +112,10 @@ class CSharpDocGenerator {
       const trimmedLine = line.trim();
 
       // クラス定義を検出
-      const classMatch = trimmedLine.match(/(?:public|internal|private|protected)?\s*(?:abstract|sealed|static)?\s*(?:partial)?\s*class\s+(\w+)/);
+      const classMatch = trimmedLine.match(/(public|internal|private|protected)?\s*(?:abstract|sealed|static)?\s*(?:partial)?\s*class\s+(\w+)/);
       if (classMatch) {
-        const className = classMatch[1];
+        const visibility = classMatch[1] || 'internal';
+        const className = classMatch[2];
 
         // 継承クラスを抽出
         const inheritMatch = trimmedLine.match(/:\s*([\w,\s]+)/);
@@ -126,6 +127,7 @@ class CSharpDocGenerator {
         currentClass = {
           type: 'class',
           name: className,
+          visibility: visibility,
           baseClasses: baseClasses,
           xmlDoc: xmlDoc,
           methods: [],
@@ -142,11 +144,12 @@ class CSharpDocGenerator {
       if (!currentClass) continue;
 
       // メソッド定義を検出
-      const methodMatch = trimmedLine.match(/(?:public|private|protected|internal)\s+(?:static\s+)?(?:virtual\s+)?(?:override\s+)?(?:abstract\s+)?(\w+(?:<[\w,\s]+>)?)\s+(\w+)\s*\(([^)]*)\)/);
+      const methodMatch = trimmedLine.match(/(public|private|protected|internal)\s+(?:static\s+)?(?:virtual\s+)?(?:override\s+)?(?:abstract\s+)?(\w+(?:<[\w,\s]+>)?)\s+(\w+)\s*\(([^)]*)\)/);
       if (methodMatch && !trimmedLine.includes('=') && !trimmedLine.includes(';')) {
-        const returnType = methodMatch[1];
-        const methodName = methodMatch[2];
-        const params = methodMatch[3];
+        const visibility = methodMatch[1];
+        const returnType = methodMatch[2];
+        const methodName = methodMatch[3];
+        const params = methodMatch[4];
 
         // コンストラクタや演算子をスキップ
         if (methodName === currentClass.name || methodName.startsWith('operator')) {
@@ -157,6 +160,7 @@ class CSharpDocGenerator {
 
         currentClass.methods.push({
           name: methodName,
+          visibility: visibility,
           returnType: returnType,
           parameters: params,
           xmlDoc: xmlDoc,
@@ -166,15 +170,17 @@ class CSharpDocGenerator {
       }
 
       // プロパティ定義を検出
-      const propertyMatch = trimmedLine.match(/(?:public|private|protected|internal)\s+(?:static\s+)?(\w+(?:<[\w,\s]+>)?)\s+(\w+)\s*\{/);
+      const propertyMatch = trimmedLine.match(/(public|private|protected|internal)\s+(?:static\s+)?(\w+(?:<[\w,\s]+>)?)\s+(\w+)\s*\{/);
       if (propertyMatch) {
-        const propType = propertyMatch[1];
-        const propName = propertyMatch[2];
+        const visibility = propertyMatch[1];
+        const propType = propertyMatch[2];
+        const propName = propertyMatch[3];
 
         const xmlDoc = this.extractXmlComments(lines, i - 1);
 
         currentClass.properties.push({
           name: propName,
+          visibility: visibility,
           type: propType,
           xmlDoc: xmlDoc,
           line: i + 1
@@ -183,15 +189,17 @@ class CSharpDocGenerator {
       }
 
       // フィールド定義を検出
-      const fieldMatch = trimmedLine.match(/(?:public|private|protected|internal)\s+(?:static\s+)?(?:readonly\s+)?(\w+(?:<[\w,\s]+>)?)\s+(\w+)\s*[;=]/);
+      const fieldMatch = trimmedLine.match(/(public|private|protected|internal)\s+(?:static\s+)?(?:readonly\s+)?(\w+(?:<[\w,\s]+>)?)\s+(\w+)\s*[;=]/);
       if (fieldMatch && !trimmedLine.includes('(')) {
-        const fieldType = fieldMatch[1];
-        const fieldName = fieldMatch[2];
+        const visibility = fieldMatch[1];
+        const fieldType = fieldMatch[2];
+        const fieldName = fieldMatch[3];
 
         const xmlDoc = this.extractXmlComments(lines, i - 1);
 
         currentClass.fields.push({
           name: fieldName,
+          visibility: visibility,
           type: fieldType,
           xmlDoc: xmlDoc,
           line: i + 1
@@ -242,7 +250,7 @@ class CSharpDocGenerator {
     }
 
     // パブリックフィールド
-    const publicFields = classInfo.fields.filter(f => f.xmlDoc && f.xmlDoc.summary);
+    const publicFields = classInfo.fields.filter(f => f.visibility === 'public');
     if (publicFields.length > 0) {
       lines.push('## フィールド');
       lines.push('');
@@ -252,13 +260,17 @@ class CSharpDocGenerator {
         lines.push('');
         lines.push(`**型:** \`${field.type}\``);
         lines.push('');
-        lines.push(field.xmlDoc.summary);
+        if (field.xmlDoc && field.xmlDoc.summary) {
+          lines.push(field.xmlDoc.summary);
+        } else {
+          lines.push('_（説明なし）_');
+        }
         lines.push('');
       }
     }
 
     // プロパティ
-    const publicProps = classInfo.properties.filter(p => p.xmlDoc && p.xmlDoc.summary);
+    const publicProps = classInfo.properties.filter(p => p.visibility === 'public');
     if (publicProps.length > 0) {
       lines.push('## プロパティ');
       lines.push('');
@@ -268,13 +280,17 @@ class CSharpDocGenerator {
         lines.push('');
         lines.push(`**型:** \`${prop.type}\``);
         lines.push('');
-        lines.push(prop.xmlDoc.summary);
+        if (prop.xmlDoc && prop.xmlDoc.summary) {
+          lines.push(prop.xmlDoc.summary);
+        } else {
+          lines.push('_（説明なし）_');
+        }
         lines.push('');
       }
     }
 
     // メソッド
-    const publicMethods = classInfo.methods.filter(m => m.xmlDoc && m.xmlDoc.summary);
+    const publicMethods = classInfo.methods.filter(m => m.visibility === 'public');
     if (publicMethods.length > 0) {
       lines.push('## メソッド');
       lines.push('');
@@ -288,11 +304,16 @@ class CSharpDocGenerator {
         lines.push('');
 
         // 概要
-        lines.push(method.xmlDoc.summary);
-        lines.push('');
+        if (method.xmlDoc && method.xmlDoc.summary) {
+          lines.push(method.xmlDoc.summary);
+          lines.push('');
+        } else {
+          lines.push('_（説明なし）_');
+          lines.push('');
+        }
 
         // パラメータ
-        if (method.xmlDoc.params.length > 0) {
+        if (method.xmlDoc && method.xmlDoc.params.length > 0) {
           lines.push('**パラメータ:**');
           lines.push('');
           for (const param of method.xmlDoc.params) {
@@ -302,7 +323,7 @@ class CSharpDocGenerator {
         }
 
         // 戻り値
-        if (method.xmlDoc.returns) {
+        if (method.xmlDoc && method.xmlDoc.returns) {
           lines.push('**戻り値:**');
           lines.push('');
           lines.push(method.xmlDoc.returns);
@@ -310,7 +331,7 @@ class CSharpDocGenerator {
         }
 
         // 例
-        if (method.xmlDoc.example) {
+        if (method.xmlDoc && method.xmlDoc.example) {
           lines.push('**例:**');
           lines.push('');
           lines.push('```csharp');
@@ -357,25 +378,44 @@ class CSharpDocGenerator {
       const fileInfo = this.parseFile(filePath);
 
       for (const classInfo of fileInfo.classes) {
-        // XMLドキュメント、またはメソッド/プロパティにXMLドキュメントがあるクラスのみ出力
-        const hasClassDoc = classInfo.xmlDoc && classInfo.xmlDoc.summary;
-        const hasMethodDocs = classInfo.methods.some(m => m.xmlDoc && m.xmlDoc.summary);
-        const hasPropertyDocs = classInfo.properties.some(p => p.xmlDoc && p.xmlDoc.summary);
-        const hasFieldDocs = classInfo.fields.some(f => f.xmlDoc && f.xmlDoc.summary);
+        // publicクラスのみドキュメント化（XMLコメントがなくてもpublicならドキュメント化）
+        if (classInfo.visibility !== 'public') continue;
 
-        if (hasClassDoc || hasMethodDocs || hasPropertyDocs || hasFieldDocs) {
+        // publicメンバーが存在するか、またはXMLドキュメントがあるクラスのみ出力
+        const hasPublicMembers =
+          classInfo.methods.some(m => m.visibility === 'public') ||
+          classInfo.properties.some(p => p.visibility === 'public') ||
+          classInfo.fields.some(f => f.visibility === 'public');
+
+        const hasClassDoc = classInfo.xmlDoc && classInfo.xmlDoc.summary;
+
+        if (hasPublicMembers || hasClassDoc) {
           const markdown = this.generateMarkdown(classInfo, fileInfo);
 
-          // 出力ファイル名を生成（名前空間 + クラス名）
-          const fileName = fileInfo.namespace
-            ? `${fileInfo.namespace}.${classInfo.name}.md`
-            : `${classInfo.name}.md`;
+          // ネームスペースベースのディレクトリを作成
+          const namespaceDir = fileInfo.namespace
+            ? path.join(this.outputDir, fileInfo.namespace)
+            : this.outputDir;
 
-          const outputPath = path.join(this.outputDir, fileName);
+          if (!fs.existsSync(namespaceDir)) {
+            fs.mkdirSync(namespaceDir, { recursive: true });
+          }
+
+          const fileName = `${classInfo.name}.md`;
+          const outputPath = path.join(namespaceDir, fileName);
           fs.writeFileSync(outputPath, markdown, 'utf-8');
 
-          generatedFiles.push({ fileName, namespace: fileInfo.namespace, className: classInfo.name });
-          console.log(`   ✓ ${fileName}`);
+          // ファイル情報を保存（リンク生成用に相対パスを含める）
+          const relativeFilePath = fileInfo.namespace
+            ? `${fileInfo.namespace}/${fileName}`
+            : fileName;
+
+          generatedFiles.push({
+            fileName: relativeFilePath,
+            namespace: fileInfo.namespace,
+            className: classInfo.name
+          });
+          console.log(`   ✓ ${relativeFilePath}`);
         }
       }
     }

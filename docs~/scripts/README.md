@@ -6,9 +6,11 @@ C#のXMLコメント（`///`）からAPIドキュメントを自動生成する�
 
 ### 機能
 
-- C#ソースファイル（`.cs`）を再帰的にスキャン
+- 両方のパッケージ（main + SaccFlight addon）のC#ソースファイル（`.cs`）を再帰的にスキャン
 - XMLコメントを`xmldoc`パッケージでパース
-- クラス、メソッド、プロパティ、フィールドのドキュメントをMarkdownに変換
+- **publicクラス、メソッド、プロパティ、フィールドを自動的にドキュメント化**
+  - XMLコメントがある場合：その説明を表示
+  - XMLコメントがない場合：「（説明なし）」と表示
 - 名前空間ごとにグループ化されたインデックスページを生成
 
 ### 使用方法
@@ -25,8 +27,22 @@ pnpm build
 ### 出力
 
 - **出力先:** `docs/api/`
-- **形式:** `{Namespace}.{ClassName}.md`
+- **形式:** `{Namespace}/{ClassName}.md`（ネームスペースごとにフォルダ分け）
 - **インデックス:** `docs/api/index.md`
+- **対象:** publicクラスのpublicメンバーのみ
+
+**ディレクトリ構造例:**
+```
+docs/api/
+├── index.md
+├── UdonRadioCommunicationRedux/
+│   ├── DefaultSetting.md
+│   ├── VoiceBroadcastByChannel.md
+│   └── ...
+└── UdonRadioCommunicationRedux.SaccFlight/
+    ├── SFEXT_URC_VHF.md
+    └── ...
+```
 
 ### XMLコメント例
 
@@ -45,6 +61,12 @@ public class MyClass : UdonSharpBehaviour
     {
         return 0;
     }
+
+    // XMLコメントがなくてもpublicであればドキュメント化される
+    public void AnotherMethod()
+    {
+        // 「（説明なし）」と表示される
+    }
 }
 ```
 
@@ -55,6 +77,12 @@ public class MyClass : UdonSharpBehaviour
 - `<returns>` - 戻り値の説明
 - `<remarks>` - 備考
 - `<example>` - 使用例
+
+### 注意事項
+
+- **XMLコメントがなくてもOK**: publicメンバーは自動的にリスト化されます
+- **privateメンバーは除外**: private/protected/internalメンバーはドキュメント化されません
+- **複数パッケージ対応**: メインパッケージとSaccFlightアドオンの両方を処理します
 
 ## copy-changelog.js
 
