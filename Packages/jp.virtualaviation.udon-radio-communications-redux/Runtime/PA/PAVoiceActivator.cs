@@ -9,8 +9,6 @@ namespace UdonRadioCommunicationRedux
     public class PAVoiceActivator : UdonSharpBehaviour
     {
         public PAVoiceSetting protocol;
-        [SerializeField] bool activateWhenEnable;
-
         [UdonSynced, FieldChangeCallback(nameof(UsingPlayerId))] private int usingPlayerId = -1;
         public int UsingPlayerId
         {
@@ -18,9 +16,11 @@ namespace UdonRadioCommunicationRedux
             { 
                 OnChanged(usingPlayerId, value);
                 usingPlayerId = value;
+                foreach(var i in onEnalbeObject) i.SetActive(usingPlayerId >= 0);
             }
             get => usingPlayerId;
         }
+        [SerializeField]GameObject[] onEnalbeObject;
 
 
         [Header("聞き手が指定した識別子のゾーン内にいるとき")]
@@ -31,15 +31,6 @@ namespace UdonRadioCommunicationRedux
         public float volumetricRadius = 9999;
         public bool lowpass = true;
 
-        void OnEnable()
-        {
-            if(activateWhenEnable) Activate();
-        }
-        void OnDisable()
-        {
-            if(activateWhenEnable) Deactivate();
-        }
-
         public override void OnPlayerRespawn(VRCPlayerApi player)
         {
             if(UsingPlayerId == Networking.LocalPlayer.playerId) Deactivate();
@@ -48,14 +39,22 @@ namespace UdonRadioCommunicationRedux
 
         public void Activate()
         {
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
             UsingPlayerId = Networking.LocalPlayer.playerId;
             RequestSerialization();
         }
         public void Deactivate()
         {
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
             UsingPlayerId = -1;
             RequestSerialization();
         }
+        public void Toggle()
+        {
+            if(usingPlayerId == Networking.LocalPlayer.playerId) Deactivate();
+            else Activate();
+        }
+
         private void OnChanged(int prevPID, int nextPID)
         {
             if(prevPID >= 0) protocol.OnPlayerReleasePA(prevPID, this);

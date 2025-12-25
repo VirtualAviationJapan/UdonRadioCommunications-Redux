@@ -17,8 +17,8 @@ namespace UdonRadioCommunicationRedux
         public override void OnPlayerVoiceAdded(int playerId){ }
         public override void OnPlayerRespawn(VRCPlayerApi player)
         {
-            if (player.isLocal) localZone = "";
-            ValidateAll();
+            // if (player.isLocal) localZone = "";
+            SendCustomEventDelayedFrames(nameof(ValidateAll), 5);
         }
 
         #region API: PA registration
