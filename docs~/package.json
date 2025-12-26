@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "node scripts/copy-changelog.js && docusaurus start",
-    "build": "node scripts/copy-changelog.js && docusaurus build",
+    "generate-api": "node scripts/generate-api-docs.js",
+    "start": "node scripts/copy-changelog.js && node scripts/generate-api-docs.js && docusaurus start",
+    "build": "node scripts/copy-changelog.js && node scripts/generate-api-docs.js && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -25,10 +26,12 @@
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.9.2",
-    "@docusaurus/tsconfig": "3.9.2",
-    "@docusaurus/types": "3.9.2",
-    "typescript": "~5.9.3"
+    "@docusaurus/module-type-aliases": "3.9.1",
+    "@docusaurus/tsconfig": "3.9.1",
+    "@docusaurus/types": "3.9.1",
+    "glob": "^11.0.3",
+    "typescript": "~5.9.3",
+    "xmldoc": "^2.0.2"
   },
   "browserslist": {
     "production": [
