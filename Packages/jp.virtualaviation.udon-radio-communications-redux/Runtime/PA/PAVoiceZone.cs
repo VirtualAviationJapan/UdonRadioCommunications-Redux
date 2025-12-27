@@ -12,6 +12,7 @@ namespace UdonRadioCommunicationRedux
         [SerializeField] string zoneName = "";
         [SerializeField] string exitZoneName = "";
         [SerializeField] bool enableWhenEnter;
+        [SerializeField] bool disableWhenExit;
         [SerializeField] bool enableWhenActive;
         bool isInit = false;
 
@@ -34,7 +35,7 @@ namespace UdonRadioCommunicationRedux
         }
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
         {
-            if(enableWhenEnter && player.isLocal) Deactivate();
+            if(disableWhenExit && player.isLocal) Deactivate();
         }
         public void Activate(){protocol.OnPlayerChangeZone(zoneName);}
         public void Deactivate(){protocol.OnPlayerChangeZone(exitZoneName);}
