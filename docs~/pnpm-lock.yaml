@@ -18,8 +18,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1(@types/react@19.2.14)(react@19.2.4)
       '@tabler/icons-react':
-        specifier: ^3.37.1
-        version: 3.37.1(react@19.2.4)
+        specifier: ^3.38.0
+        version: 3.38.0(react@19.2.4)
       clsx:
         specifier: ^2.0.0
         version: 2.1.1
@@ -1421,8 +1421,8 @@ packages:
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
     engines: {node: '>=14.16'}
 
-  '@tabler/icons-react@3.37.1':
-    resolution: {integrity: sha512-R7UE71Jji7i4Su56Y9zU1uYEBakUejuDJvyuYVmBuUoqp/x3Pn4cv2huarexR3P0GJ2eHg4rUj9l5zccqS6K/Q==}
+  '@tabler/icons-react@3.38.0':
+    resolution: {integrity: sha512-kR5wv+m4+GgmnSszg3rQd6SrTFAQ/XnQC/yTwIfuRJSfqB12KoIC7fPbIijFgOHTFlBN5DARnN0IVrR7KYG6/A==}
     peerDependencies:
       react: '>= 16'
 
@@ -7201,7 +7201,7 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
-  '@tabler/icons-react@3.37.1(react@19.2.4)':
+  '@tabler/icons-react@3.38.0(react@19.2.4)':
     dependencies:
       '@tabler/icons': 3.38.0
       react: 19.2.4
