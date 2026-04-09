@@ -41,11 +41,11 @@ jobs:
         id: set-version
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            VERSION=$(echo "${GITHUB_REF}" | sed 's#refs/tags/v##')
+            VERSION="${GITHUB_REF#refs/tags/v}"
           else
             VERSION="${{ github.event.inputs.version }}"
           fi
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "Release version set to: ${VERSION}"
 
       # Create package
@@ -54,8 +54,8 @@ jobs:
         run: |
           set -e
           mkdir -p release
-          
-          for package_dir in $(find ./main-repo/Packages -maxdepth 2 -name 'package.json' -exec dirname {} \;); do
+
+          while IFS= read -r package_dir; do
             # パッケージ名を取得 
             package_name=$(basename "$package_dir")
             zip_file="release/${package_name}-${{ steps.set-version.outputs.version }}.zip"
@@ -68,7 +68,7 @@ jobs:
           
             echo "-> Copying package.json for '${package_name}' to '${json_file}'"
             cp "${package_dir}/package.json" "${json_file}"
-          done
+          done < <(find ./main-repo/Packages -maxdepth 2 -name 'package.json' -exec dirname {} \;)
       - name: Check Package Zip
         run:  echo ${{steps.make_zip.outputs.files}}
 
