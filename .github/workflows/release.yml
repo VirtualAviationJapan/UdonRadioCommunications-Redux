@@ -105,7 +105,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Copy artifact to target repository
-        uses: robinraju/release-downloader@v1
+        uses: robinraju/release-downloader@v1.12
         with:
           tag: "v${{ needs.create-release.outputs.version }}"
           fileName: "*.json"
