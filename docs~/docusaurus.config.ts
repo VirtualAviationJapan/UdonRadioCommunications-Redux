@@ -1,8 +1,23 @@
 import {themes as prismThemes} from 'prism-react-renderer';
+import WebpackBar from 'webpackbar';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+const disableWebpackBarPlugin = () => ({
+  name: 'disable-webpackbar',
+  configureWebpack(config) {
+    const plugins = (config.plugins ?? []).filter(
+      (plugin) => plugin && !(plugin instanceof WebpackBar),
+    );
+
+    return {
+      mergeStrategy: {plugins: 'replace'},
+      plugins,
+    };
+  },
+});
 
 const config: Config = {
   title: 'UdonRadioCommunications-Redux',
@@ -49,6 +64,7 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+  plugins: [disableWebpackBarPlugin],
 
   themeConfig: {
     // Replace with your project's social card
