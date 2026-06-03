@@ -32,7 +32,7 @@ jobs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
       # Checkout
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
         with:
           path: 'main-repo'
 
@@ -98,7 +98,7 @@ jobs:
           owner: ${{ github.repository_owner }}
 
       - name: Checkout VPM Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           repository: 'VirtualAviationJapan/vpm'
           path: 'vpm-repo'
