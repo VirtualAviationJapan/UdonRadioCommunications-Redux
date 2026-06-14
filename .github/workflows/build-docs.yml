@@ -8,20 +8,29 @@ on:
 permissions:
   contents: read
 
+env:
+  DOCFX_PROJECT_PATH: .docfx
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.0.2
-      - uses: pnpm/action-setup@v6.0.8
+      - uses: actions/setup-dotnet@v4
         with:
-          package_json_file: ./docs~/package.json
-      - uses: actions/setup-node@v6.4.0
+          dotnet-version: 8.x
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: ./docs~/pnpm-lock.yaml
-      - run: pnpm install
-        working-directory: ./docs~
-      - run: pnpm run build
-        working-directory: ./docs~
+          node-version: 20
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+      - name: Install DocFX
+        run: dotnet tool update -g docfx
+      - name: Copy changelog
+        run: cp CHANGELOG.md "$DOCFX_PROJECT_PATH/docs/changelog.md"
+      - name: Clean DocFX output
+        run: rm -rf "$DOCFX_PROJECT_PATH/_site"
+      - name: Build documentation
+        run: docfx ${{ env.DOCFX_PROJECT_PATH }}/docfx.json
+      - name: Inject sidebar table of contents
+        run: node "$DOCFX_PROJECT_PATH/tools/inject-sidebar-toc.mjs" "$DOCFX_PROJECT_PATH/_site"

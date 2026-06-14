@@ -73,4 +73,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # DocFX generated files
+/.docfx/api/
 /.docfx/_site/
