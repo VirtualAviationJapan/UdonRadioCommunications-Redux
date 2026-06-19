@@ -1,0 +1,67 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../",
+          "files": [
+            "Packages/jp.virtualaviation.udon-radio-communications-redux/Runtime/**/*.cs",
+            "Packages/jp.virtualaviation.udon-radio-communications-redux-sf/Runtime/**/*.cs"
+          ],
+          "exclude": [
+            "**/Editor/**/*.cs",
+            "**/Tests/**/*.cs"
+          ]
+        },
+        {
+          "src": ".",
+          "files": [
+            "stubs/**/*.cs"
+          ]
+        }
+      ],
+      "dest": "api",
+      "allowCompilationErrors": true,
+      "filter": "filterConfig.yml"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.{md,yml}"
+        ],
+        "exclude": [
+          "_site/**",
+          "filterConfig.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "output": "_site",
+    "template": [
+      "default",
+      "modern",
+      "templates/urc"
+    ],
+    "globalMetadata": {
+      "_appName": "UdonRadioCommunications-Redux",
+      "_appTitle": "UdonRadioCommunications-Redux",
+      "_appLogoPath": "images/VAJ_Logo_B.svg",
+      "_appFaviconPath": "images/favicon.ico",
+      "_enableSearch": true,
+      "_disableToc": false,
+      "_gitContribute": {
+        "repo": "https://github.com/VirtualAviationJapan/UdonRadioCommunications-Redux",
+        "branch": "master"
+      }
+    }
+  }
+}

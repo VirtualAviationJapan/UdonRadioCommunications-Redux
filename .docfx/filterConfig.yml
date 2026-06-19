@@ -1,0 +1,3 @@
+apiRules:
+- exclude:
+    uidRegex: ^(UnityEngine|UdonSharp|VRC|TMPro|SaccFlightAndVehicles)(\.|$)

@@ -5,23 +5,62 @@ on:
     branches:
       - master
 
-permissions:
-  contents: read
+permissions: {}
+env:
+  DOCFX_PROJECT_PATH: .docfx
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      artifact-built-docs: ${{ steps.artifact-built-docs.outputs.artifact-path }}
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6.0.3
-      - uses: pnpm/action-setup@v6.0.8
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
         with:
-          package_json_file: ./docs~/package.json
-      - uses: actions/setup-node@v6.4.0
+          dotnet-version: 10.x
+      - name: Install DocFX
+        run: dotnet tool update -g docfx
+      - name: Build documentation
+        run: docfx ${{ env.DOCFX_PROJECT_PATH }}/docfx.json
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        id: artifact-built-docs
         with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: ./docs~/pnpm-lock.yaml
-      - run: pnpm install
-        working-directory: ./docs~
-      - run: pnpm run build
-        working-directory: ./docs~
+          path: .docfx/_site
+  comment-pr:
+    if: github.event_name == 'pull_request'
+    env:
+      comment_head: "## Generated Documentation"
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Find Comment
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: ${{ env.comment_head }}
+      - name: Update comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            ${{ env.comment_head }}
+            Documentation built at commit ${{github.event.pull_request.head.sha }} is [here](${{ needs.build.outputs.artifact-built-docs }})
+          reactions: hooray
+      - name: Create comment
+        if: steps.fc.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ env.comment_head }}
+            Documentation built at commit ${{github.event.pull_request.head.sha }} is [here](${{ needs.build.outputs.artifact-built-docs }})
+          reactions: rocket

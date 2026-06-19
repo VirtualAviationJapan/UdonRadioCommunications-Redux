@@ -1,12 +1,10 @@
----
-sidebar_position: 1
----
-
 # Introduction
 
 ## 概要
 
 UdonRadioCommunications-Redux は、VRChat における UdonSharp (U#) で動作する、高度な音声コミュニケーションシステムです。
+
+[UdonRadioCommunications](https://github.com/esnya/UdonRadioCommunications) の機能改善版として開発されました。
 
 ## 背景
 

@@ -9,27 +9,32 @@ on:
 permissions:
   contents: read
   pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  DOCFX_PROJECT_PATH: .docfx
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.3
-      - uses: pnpm/action-setup@v6.0.8
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+      - uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2  # v5.3.0
         with:
-          package_json_file: ./docs~/package.json
-      - uses: actions/setup-node@v6.4.0
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: ./docs~/pnpm-lock.yaml
-      - run: pnpm install
-        working-directory: ./docs~
-      - run: pnpm run build
-        working-directory: ./docs~
+          dotnet-version: 10.x
+      - name: Install DocFX
+        run: dotnet tool update -g docfx
+      - name: Clean DocFX output
+        run: rm -rf "$DOCFX_PROJECT_PATH/_site"
+      - name: Build documentation
+        run: docfx ${{ env.DOCFX_PROJECT_PATH }}/docfx.json
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: docs~/build
+          path: .docfx/_site
 
   deploy:
     name: Deploy to GitHub Pages

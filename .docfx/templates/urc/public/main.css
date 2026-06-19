@@ -1,0 +1,26 @@
+/* Custom DocFX presentation for UdonRadioCommunications-Redux. */
+
+#logo {
+  width: auto;
+  height: 2rem;
+  max-width: 2.5rem;
+  object-fit: contain;
+}
+
+.navbar-brand {
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+article img.landing-logo {
+  display: block;
+  width: min(240px, 60vw);
+  height: auto;
+  margin: 1.5rem 0 2rem;
+}
+
+@media (max-width: 767.98px) {
+  article img.landing-logo {
+    width: min(180px, 70vw);
+  }
+}
