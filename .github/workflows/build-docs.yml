@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - master
+  push:
+    branches:
+      - master
 
 permissions: {}
 env:
@@ -31,7 +34,7 @@ jobs:
           path: .${{ env.DOCFX_PROJECT_PATH }}/_site/
 
   deploy:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref_name == 'master'
     needs: build
     runs-on: ubuntu-latest
     permissions:
