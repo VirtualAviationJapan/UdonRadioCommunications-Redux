@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      artifact-built-docs: ${{ steps.artifact-built-docs.outputs.artifact-path }}
+      artifact-built-docs: ${{ steps.artifact-built-docs.outputs.artifact_id }}
     permissions:
       contents: read
     steps:
@@ -72,7 +72,7 @@ jobs:
           edit-mode: replace
           body: |
             ${{ env.comment_head }}
-            Documentation built at commit ${{github.event.pull_request.head.sha }} is [here](${{ needs.build.outputs.artifact-built-docs }})
+            Documentation built at commit ${{github.event.pull_request.head.sha }} is [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ needs.build.outputs.artifact-built-docs }})
           reactions: hooray
       - name: Create comment
         if: steps.fc.outputs.comment-id == ''
@@ -81,5 +81,5 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ${{ env.comment_head }}
-            Documentation built at commit ${{github.event.pull_request.head.sha }} is [here](${{ needs.build.outputs.artifact-built-docs }})
+            Documentation built at commit ${{github.event.pull_request.head.sha }} is [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ needs.build.outputs.artifact-built-docs }})
           reactions: rocket
