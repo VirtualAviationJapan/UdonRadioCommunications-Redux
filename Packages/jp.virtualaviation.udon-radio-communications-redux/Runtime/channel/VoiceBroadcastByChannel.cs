@@ -245,15 +245,7 @@ namespace UdonRadioCommunicationRedux
             //追加したチャンネルが聴取されているか確認する
             DataDictionary channelRxStatus = GetChildrenFromDictionary(RxChannelGainState, channel);
             float nextChannelGain = GetChannelRxGain(channelRxStatus);
-            if (nextChannelGain > 0)//聴取されていたらオブジェクトを即時に出現させる
-            {
-                DataDictionary transmittingLocalObjects = GetChildrenFromDictionary(TxChannelLocalObject, channel);//取りこぼしが出ていたら拾えるように全部見る。
-                foreach (DataToken instance in transmittingLocalObjects.GetValues().ToArray())
-                {
-                    GameObject targetGO = (GameObject)instance.Reference;
-                    targetGO.SetActive(true);
-                }
-            }
+            go.SetActive(nextChannelGain > 0);//聴取されていたらオブジェクトを即時に出現させる
         }
         public void RemoveLocalObject(int channel, GameObject go)
         {
