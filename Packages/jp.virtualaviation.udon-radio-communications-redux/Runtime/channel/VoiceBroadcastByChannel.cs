@@ -241,12 +241,46 @@ namespace UdonRadioCommunicationRedux
             DataDictionary channelLocalObject = GetChildrenFromDictionary(TxChannelLocalObject, channel);
             channelLocalObject[go.GetInstanceID()] = go;
             TxChannelLocalObject[channel] = channelLocalObject;
+
+            //追加したチャンネルが聴取されているか確認する
+            DataDictionary channelRxStatus = GetChildrenFromDictionary(RxChannelGainState, channel);
+            float nextChannelGain = GetChannelRxGain(channelRxStatus);
+            if (nextChannelGain > 0)//聴取されていたらオブジェクトを即時に出現させる
+            {
+                DataDictionary transmittingLocalObjects = GetChildrenFromDictionary(TxChannelLocalObject, channel);//取りこぼしが出ていたら拾えるように全部見る。
+                foreach (DataToken instance in transmittingLocalObjects.GetValues().ToArray())
+                {
+                    GameObject targetGO = (GameObject)instance.Reference;
+                    targetGO.SetActive(true);
+                }
+            }
         }
         public void RemoveLocalObject(int channel, GameObject go)
         {
             DataDictionary channelLocalObject = GetChildrenFromDictionary(TxChannelLocalObject, channel);
             channelLocalObject.Remove(go.GetInstanceID());
             TxChannelLocalObject[channel] = channelLocalObject;
+
+            bool listened = false;
+            foreach (DataToken otherChannel in TxChannelLocalObject.GetKeys().ToArray())//他のチャンネルでの聴取状態を取得
+            {
+                DataDictionary otherChannelLocalObject = GetChildrenFromDictionary(TxChannelLocalObject, otherChannel.Int);
+                if (otherChannelLocalObject.ContainsValue(go.GetInstanceID()))
+                {
+                    DataDictionary channelRxStatus = GetChildrenFromDictionary(RxChannelGainState, otherChannel.Int);
+                    float nextChannelGain = GetChannelRxGain(channelRxStatus);
+                    if (nextChannelGain > 0)
+                    {
+                        listened = true;//聞かれていたらそこで処理を終了する
+                        break;
+                    }
+                }
+            }
+
+            if (listened == false)
+            {
+                go.SetActive(false);
+            }
         }
 
         #endregion
