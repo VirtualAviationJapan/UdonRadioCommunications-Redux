@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: Transceiver
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: b8bb8d32a3df3f540b24a26c15821b3a, type: 2}
+  serializedUdonProgramAsset: {fileID: 11400000, guid: efb48ef01da40bf438a398b1858e7590,
+    type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: b2662efef4c57654f9667897f038c1cf, type: 3}
@@ -61,7 +62,7 @@ MonoBehaviour:
       Data: 3|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: UdonRadioCommunicationRedux.VoiceBroadcastByChannel, jp.virtualaviation.udon-radio-communications-redux
+      Data: UdonRadioCommunicationRedux.VoiceBroadcastByChannel, jp.virtualaviation.urc-redux
     - Name: 
       Entry: 8
       Data: 

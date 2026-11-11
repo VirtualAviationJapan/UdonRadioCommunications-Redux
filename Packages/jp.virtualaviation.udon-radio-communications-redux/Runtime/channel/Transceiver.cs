@@ -66,13 +66,13 @@ namespace UdonRadioCommunicationRedux
             get => txPower;
             set
             {
-                if (TransmitterPlayer == null || !TransmitterPlayer.IsValid())
-                {
-                    TransmitterPlayer = Networking.LocalPlayer;
-                }
                 txPower = value;
                 if (txPower == true)
                 {
+                    if (TransmitterPlayer == null || !TransmitterPlayer.IsValid())
+                    {
+                        TransmitterPlayer = Networking.GetOwner(this.gameObject);
+                    }
                     StartTransmit();
                 }
                 else
