@@ -38,6 +38,7 @@ namespace UdonRadioCommunicationRedux
             get => transmitterPlayer;
             set
             {
+                Debug.Log("Transceiver: transmitterPlayer changed");
                 if (txPower == true) StopTransmit();
                 transmitterPlayer = value;
                 if (txPower == true) StartTransmit();
