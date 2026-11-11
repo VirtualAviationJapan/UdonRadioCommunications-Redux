@@ -14,10 +14,10 @@ namespace UdonRadioCommunicationRedux
     {
         public VoiceBroadcastByChannel channelManager;
         [UdonSynced, FieldChangeCallback(nameof(Channel))] protected int channel;
+        [FieldChangeCallback(nameof(TransmitterPlayer))] protected VRCPlayerApi transmitterPlayer;
         [UdonSynced, FieldChangeCallback(nameof(TxPower))] protected bool txPower;
         [FieldChangeCallback(nameof(RxPower))] protected bool rxPower;
         [FieldChangeCallback(nameof(Gain))] protected float gain = 17;
-        private int oldOwner = -1;
 
         public virtual int Channel
         {
@@ -31,6 +31,17 @@ namespace UdonRadioCommunicationRedux
                 if (rxPower == true) StartReceive();
                 if (txPower == true) StartTransmit();
                 OnUpdateChannel();
+            }
+        }
+        public virtual VRCPlayerApi TransmitterPlayer
+        {
+            get => transmitterPlayer;
+            set
+            {
+                if (txPower == true) StopTransmit();
+                transmitterPlayer = value;
+                if (txPower == true) StartTransmit();
+                OnUpdateTransmitterPlayer();
             }
         }
         public bool RxPower
@@ -55,6 +66,10 @@ namespace UdonRadioCommunicationRedux
             get => txPower;
             set
             {
+                if (TransmitterPlayer == null || !TransmitterPlayer.IsValid())
+                {
+                    TransmitterPlayer = Networking.LocalPlayer;
+                }
                 txPower = value;
                 if (txPower == true)
                 {
@@ -120,11 +135,11 @@ namespace UdonRadioCommunicationRedux
         }
         protected virtual void StartTransmit()
         {
-            channelManager.Publish(this, Networking.GetOwner(gameObject).playerId, channel);
+            if (TransmitterPlayer != null && transmitterPlayer.IsValid()) channelManager.Publish(this, transmitterPlayer.playerId, channel);
         }
         protected virtual void StopTransmit()
         {
-            channelManager.Unpublish(this, Networking.GetOwner(gameObject).playerId, channel);
+            if (TransmitterPlayer != null && transmitterPlayer.IsValid()) channelManager.Unpublish(this, transmitterPlayer.playerId, channel);
         }
 
         #region callback
@@ -132,18 +147,14 @@ namespace UdonRadioCommunicationRedux
         public virtual void ChannelNotTransmitting() { }
         public virtual void OnUpdateChannel() { }
         public virtual void OnUpdateGain() { }
+        public virtual void OnUpdateTransmitterPlayer() { }
         #endregion
 
         #region event
         public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
-            if (oldOwner == -1)
-            {
-                oldOwner = Networking.LocalPlayer.playerId;
-            }
-            channelManager.Unpublish(this, oldOwner, channel);
             if (player.isLocal && txPower) TxPower = false;
-            oldOwner = player.playerId;
+            TransmitterPlayer = player;
         }
         #endregion
     }
