@@ -1,4 +1,4 @@
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDK3.Components;
 using VRC.SDKBase;
@@ -17,6 +17,7 @@ namespace UdonRadioCommunicationRedux
         [UdonSynced, FieldChangeCallback(nameof(TxPower))] protected bool txPower;
         [FieldChangeCallback(nameof(RxPower))] protected bool rxPower;
         [FieldChangeCallback(nameof(Gain))] protected float gain = 17;
+        private int oldOwner = -1;
 
         public virtual int Channel
         {
@@ -136,7 +137,13 @@ namespace UdonRadioCommunicationRedux
         #region event
         public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
+            if (oldOwner == -1)
+            {
+                oldOwner = Networking.LocalPlayer.playerId;
+            }
+            channelManager.Unpublish(this, oldOwner, channel);
             if (player.isLocal && txPower) TxPower = false;
+            oldOwner = player.playerId;
         }
         #endregion
     }
