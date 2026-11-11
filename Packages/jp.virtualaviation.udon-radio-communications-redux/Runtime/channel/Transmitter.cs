@@ -8,7 +8,7 @@ public class Transmitter : UdonSharpBehaviour
 {
     public VoiceBroadcastByChannel channelManager;
     [FieldChangeCallback(nameof(Channel))] protected int channel;
-    [FieldChangeCallback(nameof(TransmitterID))] protected int transmitterID;
+    [FieldChangeCallback(nameof(TransmitterPlayer))] VRCPlayerApi transmitterPlayer;
     [FieldChangeCallback(nameof(TxPower))] protected bool txPower;
 
     public virtual int Channel
@@ -26,7 +26,13 @@ public class Transmitter : UdonSharpBehaviour
 
     private int TransmitterID
     {
-        get => transmitterID;
+        get{
+            if(transmitterPlayer != null && transmitterPlayer.IsValid())
+            {
+                return transmitterPlayer.playerId;
+            }
+            return -1;
+        }
         set
         {
             TransmitterPlayer = VRCPlayerApi.GetPlayerById(value);
@@ -34,24 +40,14 @@ public class Transmitter : UdonSharpBehaviour
     }
     public virtual VRCPlayerApi TransmitterPlayer
     {
-        get{
-            VRCPlayerApi transmitterPlayer = VRCPlayerApi.GetPlayerById(transmitterID);
-            return transmitterPlayer;
-        }
+        get => transmitterPlayer;
         set
         {
             if (txPower == true) StopTransmit();
-            if (value != null)
-            {
-                Debug.Log("Transceiver: transmitterPlayer changed");
-                transmitterID = value.playerId;
-            }
-            else
-            {
-                transmitterID = -1;
-            }
+            Debug.Log("Transceiver: transmitterPlayer changed");
+            transmitterPlayer = value;
             if (txPower == true) StartTransmit();
-            OnUpdateTransmitter();
+            OnUpdateTransmitterPlayer();
         }
     }
 
@@ -88,18 +84,18 @@ public class Transmitter : UdonSharpBehaviour
     #endregion
     protected virtual void StartTransmit()
     {
-        channelManager.Publish(this, transmitterID, channel);
+        if (TransmitterID >= 0) channelManager.Publish(this, TransmitterID, channel);
     }
     protected virtual void StopTransmit()
     {
-        channelManager.Unpublish(this, transmitterID, channel);
+        if (TransmitterID >= 0) channelManager.Unpublish(this, TransmitterID, channel);
     }
 
     #region callback
     public virtual void ChannelTransmitting() { }
     public virtual void ChannelNotTransmitting() { }
     public virtual void OnUpdateChannel() { }
-    public virtual void OnUpdateTransmitter() { }
+    public virtual void OnUpdateTransmitterPlayer() { }
     public virtual void OnUpdateGain() { }
     #endregion
 }
