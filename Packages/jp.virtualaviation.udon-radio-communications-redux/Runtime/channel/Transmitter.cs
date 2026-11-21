@@ -42,14 +42,17 @@ public class Transmitter : UdonSharpBehaviour
     {
         get => transmitterPlayer;
         set
+        {
+            if(transmitterPlayer != value)
             {
                 if (txPower == true) StopTransmit();
-            Debug.Log("Transceiver: transmitterPlayer changed");
+                Debug.Log("Transmitter: transmitterPlayer changed");
                 transmitterPlayer = value;
                 if (txPower == true) StartTransmit();
                 OnUpdateTransmitterPlayer();
             }
         }
+    }
 
     public bool TxPower
     {
