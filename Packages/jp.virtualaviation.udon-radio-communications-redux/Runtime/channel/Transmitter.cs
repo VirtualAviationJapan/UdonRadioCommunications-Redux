@@ -16,7 +16,7 @@ public class Transmitter : UdonSharpBehaviour
         get => channel;
         set
         {
-            Debug.Log("Transceiver: channel changed");
+            Debug.Log("Transmitter: channel changed");
             if (txPower == true) StopTransmit();
             channel = value;
             if (txPower == true) StartTransmit();
@@ -42,14 +42,14 @@ public class Transmitter : UdonSharpBehaviour
     {
         get => transmitterPlayer;
         set
-        {
-            if (txPower == true) StopTransmit();
+            {
+                if (txPower == true) StopTransmit();
             Debug.Log("Transceiver: transmitterPlayer changed");
-            transmitterPlayer = value;
-            if (txPower == true) StartTransmit();
-            OnUpdateTransmitterPlayer();
+                transmitterPlayer = value;
+                if (txPower == true) StartTransmit();
+                OnUpdateTransmitterPlayer();
+            }
         }
-    }
 
     public bool TxPower
     {
